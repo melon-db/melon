@@ -1,12 +1,12 @@
 package net.seesharpsoft.melon.jdbc;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Melonade;
 import org.h2.message.DbException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class MelonDriver extends org.h2.Driver {
 
@@ -34,15 +34,16 @@ public class MelonDriver extends org.h2.Driver {
     }
 
     @Override
-    public Connection connect(String url, Properties info) throws SQLException {
+    public Connection connect(String url, java.util.Properties info) throws SQLException {
         try {
-            if (info == null) {
-                info = new Properties();
+            Properties properties = new Properties();
+            if (info != null) {
+                properties.putAll(info);
             }
             if (!acceptsURL(url)) {
                 return null;
             }
-            return new MelonConnection(Melonade.getOrCreateMelonInfo(url, info));
+            return new MelonConnection(Melonade.getOrCreateMelonInfo(url, properties));
         } catch (Exception e) {
             throw DbException.toSQLException(e);
         }

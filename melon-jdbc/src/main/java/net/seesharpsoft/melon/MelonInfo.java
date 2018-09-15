@@ -1,16 +1,15 @@
 package net.seesharpsoft.melon;
 
 import lombok.Getter;
+import net.seesharpsoft.commons.collection.Properties;
+import net.seesharpsoft.commons.collection.PropertiesOwner;
 
-import java.util.Properties;
-import java.util.UUID;
-
-public class MelonInfo {
+public class MelonInfo implements PropertiesOwner {
     
     public static final String CONFIG_FILE = "configurationFile";
     
     @Getter
-    private final UUID uuid;
+    private final String id;
 
     @Getter
     private final String url;
@@ -21,11 +20,11 @@ public class MelonInfo {
     @Getter
     private Properties properties;
     
-    public MelonInfo(String url, Schema schema, Properties properties) {
+    public MelonInfo(String id, String url, Schema schema, Properties properties) {
         this.url = url;
         this.schema = schema;
-        this.properties = properties;
-        this.uuid = UUID.randomUUID();
+        this.properties = new Properties(properties);
+        this.id = id;
     }
     
 }

@@ -3,22 +3,24 @@ package net.seesharpsoft.melon.impl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Table;
 
-@NoArgsConstructor
 public class ColumnImpl implements Column {
     
-    @Setter
     @Getter
-    private Table table;
+    protected final Properties properties;
     
-    @Setter
     @Getter
-    private String name;
+    protected final Table table;
     
-    public ColumnImpl(Table table, String name) {
+    @Getter
+    protected final String name;
+    
+    public ColumnImpl(Table table, String name, Properties properties) {
         this.table = table;
         this.name = name;
+        this.properties = new Properties(properties);
     }
 }

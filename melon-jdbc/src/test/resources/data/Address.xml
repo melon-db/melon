@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<ADDRESS>
+  <DATA_RECORD>
+    <ID>1</ID>
+    <CITY>Las Vegas</CITY>
+    <COUNTRY>US</COUNTRY>
+  </DATA_RECORD>
+  <DATA_RECORD>
+    <ID>2</ID>
+    <CITY>Mexico City</CITY>
+    <COUNTRY>Mexico</COUNTRY>
+  </DATA_RECORD>
+</ADDRESS>

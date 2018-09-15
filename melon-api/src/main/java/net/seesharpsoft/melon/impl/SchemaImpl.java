@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon.impl;
 
 import lombok.Getter;
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.Table;
 
@@ -10,13 +11,17 @@ import java.util.Set;
 
 public class SchemaImpl implements Schema {
     
+    @Getter
+    protected final Properties properties;
+    
     protected final Set<Table> tables;
     
     @Getter
     private final String name;
     
-    public SchemaImpl(String name) {
+    public SchemaImpl(String name, Properties properties) {
         this.name = name;
+        this.properties = new Properties(properties);
         this.tables = new HashSet<>();
     }
 

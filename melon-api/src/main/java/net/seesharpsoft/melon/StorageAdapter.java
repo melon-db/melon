@@ -1,7 +1,8 @@
 package net.seesharpsoft.melon;
 
+import net.seesharpsoft.commons.collection.Properties;
+
 import java.io.IOException;
-import java.util.Properties;
 
 public interface StorageAdapter extends Comparable {
 

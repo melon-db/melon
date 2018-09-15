@@ -1,18 +1,18 @@
-package net.seesharpsoft.melon.csv;
+package net.seesharpsoft.melon.storage;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.StorageAdapter;
 import net.seesharpsoft.melon.Table;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 public class CsvStorageAdapter implements StorageAdapter {
     @Override
     public boolean canHandle(Table table, Properties properties, Object input) {
         return input instanceof File &&
-                ((File) input).getName().endsWith("csv");
+                ((File) input).getName().endsWith(".csv");
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.seesharpsoft.melon.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
 
@@ -9,10 +10,10 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 public abstract class StorageBase implements Storage {
     
+    @Getter
     protected final Properties properties;
     
     protected final Table table;

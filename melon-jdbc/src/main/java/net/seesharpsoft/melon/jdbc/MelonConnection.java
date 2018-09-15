@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon.jdbc;
 
 import lombok.Getter;
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.MelonInfo;
 import net.seesharpsoft.melon.Melonade;
 import org.h2.engine.Constants;
@@ -8,17 +9,16 @@ import org.h2.engine.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.util.Properties;
 
 public class MelonConnection extends org.h2.jdbc.JdbcConnection {
     
     private static String getH2Url(MelonInfo melonInfo) {
-        return String.format("%smem:%s", Constants.START_URL, melonInfo.getUuid());
+        return String.format("%smem:%s", Constants.START_URL, melonInfo.getId());
     }
     
-    private static Properties applyDefaultConnectionSettings(Properties properties) {
-        properties.setProperty("AUTOCOMMIT", "false");
-        return properties;
+    private static java.util.Properties applyDefaultConnectionSettings(Properties properties) {
+        properties.put("AUTOCOMMIT", "false");
+        return properties.legacy();
     }
     
     @Getter

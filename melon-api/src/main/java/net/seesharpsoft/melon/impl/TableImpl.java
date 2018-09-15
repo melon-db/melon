@@ -2,6 +2,7 @@ package net.seesharpsoft.melon.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
@@ -12,6 +13,9 @@ import java.util.List;
 
 public class TableImpl implements Table {
     
+    @Getter
+    protected final Properties properties;
+    
     protected final List<Column> columns;
     
     @Getter
@@ -21,8 +25,9 @@ public class TableImpl implements Table {
     @Getter
     protected Storage storage;
     
-    public TableImpl(String name) {
+    public TableImpl(String name, Properties properties) {
         this.name = name;
+        this.properties = new Properties(properties);
         this.columns = new ArrayList<>();
     }
     
@@ -33,5 +38,10 @@ public class TableImpl implements Table {
     
     public void addColumn(Column column) {
         this.columns.add(column);
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 }

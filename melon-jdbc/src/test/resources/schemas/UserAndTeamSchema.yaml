@@ -12,12 +12,13 @@ tables:
         ignoreHeader: true
   - name: Team
     columns:
-        - name: name
+      - name: id
+      - name: name
     storage:
-      location: ../data/Team.csv
+      location: ../data/Team.properties
   - name: TeamMembers
     columns:
-      - name: groupName
+      - name: teamId
       - name: userId
     storage:
-      location: ../data/GroupMembers.csv
+      location: ../data/TeamMembers.csv

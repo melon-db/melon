@@ -11,3 +11,4 @@ rootProject.name = 'melon'
 
 include 'melon-api'
 include 'melon-jdbc'
+include 'melon-json'

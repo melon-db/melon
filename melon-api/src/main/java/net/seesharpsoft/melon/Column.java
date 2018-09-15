@@ -1,6 +1,8 @@
 package net.seesharpsoft.melon;
 
-public interface Column {
+import net.seesharpsoft.commons.collection.PropertiesOwner;
+
+public interface Column extends PropertiesOwner {
     Table getTable();
 
     String getName();

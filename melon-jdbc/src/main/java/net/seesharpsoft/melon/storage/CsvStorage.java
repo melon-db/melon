@@ -1,5 +1,6 @@
-package net.seesharpsoft.melon.csv;
+package net.seesharpsoft.melon.storage;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Table;
 import net.seesharpsoft.melon.impl.FileStorageBase;
@@ -14,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class CsvStorage extends FileStorageBase {

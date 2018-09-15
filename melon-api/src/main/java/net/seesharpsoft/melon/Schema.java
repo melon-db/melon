@@ -1,9 +1,11 @@
 package net.seesharpsoft.melon;
 
+import net.seesharpsoft.commons.collection.PropertiesOwner;
+
 import java.util.Objects;
 import java.util.Set;
 
-public interface Schema {
+public interface Schema extends PropertiesOwner {
     
     String getName();
     

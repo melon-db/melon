@@ -1,9 +1,11 @@
 package net.seesharpsoft.melon;
 
+import net.seesharpsoft.commons.collection.PropertiesOwner;
+
 import java.io.IOException;
 import java.util.List;
 
-public interface Storage {
+public interface Storage extends PropertiesOwner {
     List<List<String>> read() throws IOException;
 
     void write(List<List<String>> records) throws IOException;

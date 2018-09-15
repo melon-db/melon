@@ -1,10 +1,10 @@
 package net.seesharpsoft.melon.config;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 public class StorageConfig {
     public String location;

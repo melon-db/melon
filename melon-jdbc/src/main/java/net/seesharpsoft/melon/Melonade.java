@@ -1,5 +1,6 @@
 package net.seesharpsoft.melon;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.config.SchemaConfig;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
@@ -18,7 +19,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 public class Melonade {
@@ -72,7 +72,7 @@ public class Melonade {
             Properties infoProperties = new Properties(properties);
             infoProperties.put(MelonInfo.CONFIG_FILE, file);
             
-            melonInfo = new MelonInfo(url, schemaConfig.getSchema(infoProperties), infoProperties);
+            melonInfo = new MelonInfo(file.getName(), url, schemaConfig.getSchema(infoProperties), infoProperties);
             CREATED_INFOS.put(url, melonInfo);
         }
         
@@ -94,7 +94,7 @@ public class Melonade {
 
             for (List<String> fields : records) {
                 for (int i = 0; i < columnSize; ++i) {
-                    ps.setString(i + 1, fields.get(i));
+                    ps.setString(i + 1, fields.size() <= i ? null : fields.get(i));
                 }
                 ps.addBatch();
 
@@ -112,6 +112,9 @@ public class Melonade {
         
         for (Table table : info.getSchema().getTables()) {
             Storage storage = table.getStorage();
+            if (storage == null) {
+                throw new RuntimeException("no storage for " + table);
+            }
             Boolean storageHasChanges = storage.hasChanges();
             if (storageHasChanges == null) {
                 createDatabaseSchema(melonConnection, table);

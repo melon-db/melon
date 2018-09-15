@@ -1,0 +1,34 @@
+name: dummy
+tables:
+  - name: User
+    columns:
+      - name: id
+      - name: firstName
+      - name: lastName
+      - name: additional
+    storage:
+      location: ../data/User.csv
+      properties:
+        ignoreHeader: true
+  - name: Team
+    columns:
+      - name: id
+      - name: name
+    storage:
+      location: ../data/Team.properties
+  - name: TeamMembers
+    columns:
+      - name: teamId
+      - name: userId
+    storage:
+      location: ../data/TeamMembers.csv
+  - name: Address
+    columns:
+      - name: id
+      - name: city
+      - name: country
+      - name: userId
+    storage:
+      location: ../data/Address.xml
+      properties:
+        path: /ADDRESS/DATA_RECORD

@@ -1,11 +1,11 @@
 package net.seesharpsoft.melon.config;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Table;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
 
 import java.util.List;
-import java.util.Properties;
 
 public class TableConfig {
     
@@ -15,12 +15,17 @@ public class TableConfig {
     
     public List<ColumnConfig> columns;
     
-    public Table getTable(Properties properties) {
-        TableImpl table = new TableImpl(this.name);
-        table.setStorage(storage.getStorage(table, properties));
+    public Properties properties;
+    
+    public Table getTable(Properties additionalProperties) {
+        Properties finalProperties = new Properties(additionalProperties);
+        finalProperties.putAll(properties);
+        
+        TableImpl table = new TableImpl(this.name, finalProperties);
+        
+        table.setStorage(storage.getStorage(table, finalProperties));
         columns.forEach(columnConfig -> {
-            ColumnImpl column = columnConfig.getColumn();
-            column.setTable(table);
+            ColumnImpl column = columnConfig.getColumn(table, finalProperties);
             table.addColumn(column);
         });
         return table;

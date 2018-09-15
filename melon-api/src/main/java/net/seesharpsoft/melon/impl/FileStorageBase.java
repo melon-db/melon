@@ -1,12 +1,12 @@
 package net.seesharpsoft.melon.impl;
 
+import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Table;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 public abstract class FileStorageBase extends StorageBase {
     

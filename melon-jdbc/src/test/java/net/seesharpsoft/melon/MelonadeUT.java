@@ -109,11 +109,18 @@ public class MelonadeUT {
 
     @Test
     public void should_create_connection_and_missing_storage_file() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserAndGroupSchema.yaml", MelonDriver.MELON_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserAndTeamSchema.yaml", MelonDriver.MELON_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
             assertThat(melonConnection.getMelonInfo().getProperties(), notNullValue());
+        }
+    }
+
+    @Test
+    public void should_create_connection() throws SQLException {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/All.yaml", MelonDriver.MELON_URL_PREFIX))) {
+            assertThat(connection, instanceOf(MelonConnection.class));
         }
     }
 }
