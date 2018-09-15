@@ -1,0 +1,23 @@
+name: dummy
+tables:
+  - name: User
+    columns:
+      - name: id
+      - name: firstName
+      - name: lastName
+      - name: additional
+    storage:
+      location: ../data/User.csv
+      properties:
+        ignoreHeader: true
+  - name: Team
+    columns:
+        - name: name
+    storage:
+      location: ../data/Team.csv
+  - name: TeamMembers
+    columns:
+      - name: groupName
+      - name: userId
+    storage:
+      location: ../data/GroupMembers.csv
