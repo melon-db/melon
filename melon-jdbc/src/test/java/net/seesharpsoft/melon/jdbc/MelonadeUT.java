@@ -1,7 +1,7 @@
-package net.seesharpsoft.melon;
+package net.seesharpsoft.melon.jdbc;
 
-import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonDriver;
+import net.seesharpsoft.melon.MelonadeFactory;
+import net.seesharpsoft.melon.Storage;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class MelonadeUT {
 
     @After
     public void afterEach() {
-        Melonade.reset();
+        MelonadeFactory.INSTANCE.clear();
     }
     
     @Test
@@ -30,7 +30,7 @@ public class MelonadeUT {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            assertThat(melonConnection.getMelonInfo().getProperties(), notNullValue());
+            assertThat(melonConnection.melonade.getProperties(), notNullValue());
         }
     }
 
@@ -61,7 +61,7 @@ public class MelonadeUT {
         try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonDriver.MELON_URL_PREFIX))) {
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
 
-            Storage storage = connection.getMelonInfo().getSchema().getTable("User").getStorage();
+            Storage storage = connection.melonade.getSchema().getTable("User").getStorage();
             List<List<String>> records = storage.read();
 
             assertThat(records.stream().filter(record -> record.get(0).equals("1")).findFirst().orElse(null), is(Arrays.asList("1", "Fritz", "Fuchs", null)));
@@ -75,13 +75,14 @@ public class MelonadeUT {
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
             connection.rollback();
 
-            Storage storage = connection.getMelonInfo().getSchema().getTable("User").getStorage();
+            Storage storage = connection.melonade.getSchema().getTable("User").getStorage();
             List<List<String>> records = storage.read();
 
             assertThat(records.stream().filter(record -> record.get(0).equals("1")).findFirst().orElse(null), is(Arrays.asList("1", "Fritz", "Fuchs", null)));
         }
     }
 
+    // TODO cleanup
     @Test
     public void should_persist_changes_in_source_file_on_commit() throws SQLException, IOException {
         try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonDriver.MELON_URL_PREFIX))) {
@@ -89,10 +90,24 @@ public class MelonadeUT {
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
             connection.commit();
 
-            Storage storage = connection.getMelonInfo().getSchema().getTable("User").getStorage();
+            Storage storage = connection.melonade.getSchema().getTable("User").getStorage();
             List<List<String>> records = storage.read();
 
             assertThat(records.stream().filter(record -> record.get(0).equals("1")).findFirst().orElse(null), is(Arrays.asList("1", "Tobi", "Tester", null)));
+        }
+    }
+
+    @Test
+    public void should_not_persist_changes_in_source_if_accessMode_is_readOnly() throws SQLException, IOException {
+        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/SchemaAccessModeReadOnly.yaml", MelonDriver.MELON_URL_PREFIX))) {
+
+            connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
+            connection.commit();
+
+            Storage storage = connection.melonade.getSchema().getTable("User").getStorage();
+            List<List<String>> records = storage.read();
+
+            assertThat(records.stream().filter(record -> record.get(0).equals("1")).findFirst().orElse(null), is(Arrays.asList("1", "Fritz", "Fuchs", null)));
         }
     }
 
@@ -103,7 +118,7 @@ public class MelonadeUT {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            assertThat(melonConnection.getMelonInfo().getProperties(), notNullValue());
+            assertThat(melonConnection.melonade.getProperties(), notNullValue());
         }
     }
 
@@ -113,7 +128,7 @@ public class MelonadeUT {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            assertThat(melonConnection.getMelonInfo().getProperties(), notNullValue());
+            assertThat(melonConnection.melonade.getProperties(), notNullValue());
         }
     }
 

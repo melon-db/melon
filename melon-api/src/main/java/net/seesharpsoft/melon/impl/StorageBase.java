@@ -33,23 +33,30 @@ public abstract class StorageBase implements Storage {
     @Override
     public List<List<String>> read() throws IOException {
         List<List<String>> result = read(this.table, this.properties);
-        setLastSynced(Instant.now().toEpochMilli());
+        setLastSynced(getSyncTime());
         return result;
     }
 
     @Override
     public void write(List<List<String>> records) throws IOException {
+        if (getProperties().getOrDefault(PROPERTY_ACCESS_MODE, ACCESS_MODE_DEFAULT).equals(ACCESS_MODE_READONLY)) {
+            return;
+        }
         write(this.table, this.properties, records);
-        setLastSynced(Instant.now().toEpochMilli());
+        setLastSynced(getSyncTime());
     }
 
     @Override
-    public Boolean hasChanges() {
-        return getLastSynced() == 0 ? null : getLastModified() > getLastSynced();
+    public boolean hasChanges() {
+        return getLastSynced() == 0 || getLastModified() > getLastSynced();
     }
 
     protected long getLastModified() {
         return getLastSynced();
+    }
+
+    protected long getSyncTime() {
+        return Instant.now().toEpochMilli();
     }
     
     protected abstract List<List<String>> read(Table table, Properties properties) throws IOException;

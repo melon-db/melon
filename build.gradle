@@ -8,7 +8,7 @@ allprojects {
     apply plugin: 'java'
 
     group 'net.seesharpsoft.melon'
-    version = '1.0-SNAPSHOT'
+    version = '0.1.0'
 }
 
 subprojects {
@@ -16,9 +16,6 @@ subprojects {
     
     repositories {
         mavenCentral()
-//        mavenLocal {
-//            url 'file://C:/Users/Nutzer/.m2/repository'
-//        }
     }
     
     dependencies {

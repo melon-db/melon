@@ -6,26 +6,18 @@ import net.seesharpsoft.melon.*;
 import java.io.File;
 import java.io.IOException;
 
-public class StorageConfig {
+public class StorageConfig extends ConfigBase {
     public String location;
     
-    public Properties properties;
-    
     public Storage getStorage(Table table, Properties additionalProperties) {
+        Properties finalProperties = getProperties(additionalProperties);
         try {
-            Properties finalProperties = new Properties();
-            if (additionalProperties != null) {
-                finalProperties.putAll(additionalProperties);
-            }
-            if (this.properties != null) {
-                finalProperties.putAll(this.properties);
-            }
             if (location != null && !location.isEmpty()) {
-                File targetFile = Melonade.getAbsolutePath(location, ((File) additionalProperties.get(MelonInfo.CONFIG_FILE)).getParentFile().getAbsolutePath());
+                File targetFile = MelonadeFactory.getAbsolutePath(location, ((File) additionalProperties.get(Melonade.CONFIG_FILE)).getParentFile().getAbsolutePath());
 
-                return StorageFactory.INSTANCE.createStorageFor(table, properties, targetFile);
+                return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, targetFile);
             }
-            return StorageFactory.INSTANCE.createStorageFor(table, properties, null);
+            return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, null);
         } catch (IOException exc) {
             exc.printStackTrace();
         }

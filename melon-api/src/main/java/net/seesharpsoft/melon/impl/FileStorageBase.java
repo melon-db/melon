@@ -10,6 +10,10 @@ import java.util.Objects;
 
 public abstract class FileStorageBase extends StorageBase {
     
+    public static final String PROPERTY_CHARSET = "charset";
+
+    public static final String DEFAULT_CHARSET = "UTF-8";
+    
     protected File file;
     
     public FileStorageBase(Table table, Properties properties, File file) throws IOException {
@@ -23,6 +27,16 @@ public abstract class FileStorageBase extends StorageBase {
         if (!file.exists()) {
             file.createNewFile();
         }
+    }
+
+    @Override
+    protected long getLastModified() {
+        return file.lastModified();
+    }
+
+    @Override
+    protected long getSyncTime() {
+        return file.lastModified();
     }
     
     protected List<List<String>> read(Table table, Properties properties) throws IOException {

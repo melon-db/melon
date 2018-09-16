@@ -53,4 +53,30 @@ public class XmlStorageUT {
         
         assertThat(data.size(), is(2));
     }
+
+    @Test
+    public void should_repeatedly_read_and_write_address_xml_properly() throws IOException {
+        TableImpl table = new TableImpl("Address", new Properties());
+        ColumnImpl column = new ColumnImpl(table, "id", new Properties());
+        table.addColumn(column);
+        column = new ColumnImpl(table, "city", new Properties());
+        table.addColumn(column);
+        column = new ColumnImpl(table, "country", new Properties());
+        table.addColumn(column);
+        column = new ColumnImpl(table, "userId", new Properties());
+        table.addColumn(column);
+        Properties properties = new Properties();
+        properties.put(XmlStorage.PROPERTY_ROOT, "/address/data_record");
+        XmlStorage storage = new XmlStorage(table, properties, new File(getClass().getResource("/files/Address_Test.xml").getFile()));
+
+        List<List<String>> data = storage.read(new File(getClass().getResource("/files/Address_Test.xml").getFile()), table, properties);
+        assertThat(data.size(), is(2));
+        
+        storage.write(new File(getClass().getResource("/files/Address_Test.xml").getFile()), table, properties, data);
+
+        List<List<String>> newData = storage.read(new File(getClass().getResource("/files/Address_Test.xml").getFile()), table, properties);
+
+        assertThat(newData.size(), is(2));
+        assertThat(newData, is(data));
+    }
 }

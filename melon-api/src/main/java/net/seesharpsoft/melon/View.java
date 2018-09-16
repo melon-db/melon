@@ -2,10 +2,9 @@ package net.seesharpsoft.melon;
 
 import net.seesharpsoft.commons.collection.PropertiesOwner;
 
-public interface Column extends PropertiesOwner {
-    Table getTable();
-
+public interface View extends PropertiesOwner {
+    
     String getName();
     
-    boolean isPrimary();
+    String getQuery();
 }

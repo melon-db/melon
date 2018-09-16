@@ -5,20 +5,24 @@ import net.seesharpsoft.melon.impl.SchemaImpl;
 
 import java.util.Set;
 
-public class SchemaConfig {
+public class SchemaConfig extends ConfigBase {
     
     public String name;
     
     public Set<TableConfig> tables;
-    
-    public Properties properties;
+
+    public Set<ViewConfig> views;
     
     public SchemaImpl getSchema(Properties additionalProperties) {
-        Properties finalProperties = new Properties(additionalProperties);
-        finalProperties.putAll(properties);
+        Properties finalProperties = getProperties(additionalProperties);
         
         SchemaImpl schema = new SchemaImpl(name, finalProperties);
-        tables.forEach(table -> schema.addTable(table.getTable(finalProperties)));
+        if (tables != null) {
+            tables.forEach(table -> schema.addTable(table.getTable(finalProperties)));
+        }
+        if (views != null) {
+            views.forEach(view -> schema.addView(view.getView(finalProperties)));
+        }
         return schema;
     }
 }

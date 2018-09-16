@@ -1,19 +1,17 @@
 package net.seesharpsoft.melon.jdbc;
 
-import lombok.Getter;
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.MelonInfo;
 import net.seesharpsoft.melon.Melonade;
+import net.seesharpsoft.melon.MelonadeFactory;
 import org.h2.engine.Constants;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
 public class MelonConnection extends org.h2.jdbc.JdbcConnection {
     
-    private static String getH2Url(MelonInfo melonInfo) {
-        return String.format("%smem:%s", Constants.START_URL, melonInfo.getId());
+    private static String getH2Url(Melonade melonade) {
+        return String.format("%smem:%s", Constants.START_URL, melonade.getId());
     }
     
     private static java.util.Properties applyDefaultConnectionSettings(Properties properties) {
@@ -21,51 +19,21 @@ public class MelonConnection extends org.h2.jdbc.JdbcConnection {
         return properties.legacy();
     }
     
-    @Getter
-    private MelonInfo melonInfo;
+    protected Melonade melonade;
     
-    @Getter
-    private int melonSyncCounter;
-    
-    public MelonConnection(MelonInfo melonInfo) throws SQLException {
-        super(getH2Url(melonInfo), applyDefaultConnectionSettings(melonInfo.getProperties()));
+    public MelonConnection(Melonade melonade) throws SQLException {
+        super(getH2Url(melonade), applyDefaultConnectionSettings(melonade.getProperties()));
         
-        this.melonInfo = melonInfo;
-
-        syncMelonToH2();
+        this.melonade = melonade;
+        this.melonade.syncToDatabase(this);
     }
 
-    private void syncMelonToH2() throws SQLException {
-        if (melonSyncCounter == 0) {
-            try {
-                ++melonSyncCounter;
-                Melonade.syncToDatabase(this);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                --melonSyncCounter;
-            }
-        }
-    }
-
-    private void syncH2ToMelon() throws SQLException {
-        if (melonSyncCounter == 0) {
-            try {
-                ++melonSyncCounter;
-                Melonade.syncToStorage(this);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                --melonSyncCounter;
-            }
-        }
-    }
-
+    
     @Override
     public synchronized void close() throws SQLException {
         super.close();
         
-        Melonade.close(this);
+        MelonadeFactory.INSTANCE.remove(melonade);
     }
     
     /**
@@ -78,20 +46,20 @@ public class MelonConnection extends org.h2.jdbc.JdbcConnection {
     public synchronized void commit() throws SQLException {
         super.commit();
 
-        syncH2ToMelon();
+        this.melonade.syncToStorage(this);
     }
 
     @Override
     public synchronized void rollback() throws SQLException {
         super.rollback();
 
-        syncMelonToH2();
+        this.melonade.syncToDatabase(this);
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         super.rollback(savepoint);
 
-        syncMelonToH2();
+        this.melonade.syncToDatabase(this);
     }
 }

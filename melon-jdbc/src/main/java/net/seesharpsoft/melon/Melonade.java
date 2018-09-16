@@ -1,91 +1,53 @@
 package net.seesharpsoft.melon;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.commons.util.SharpIO;
-import net.seesharpsoft.melon.config.SchemaConfig;
-import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonDriver;
 import net.seesharpsoft.melon.sql.SqlHelper;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 public class Melonade {
-    
-    private static final Map<String, MelonInfo> CREATED_INFOS = new HashMap<>();
-    
-    public static void reset() {
-        CREATED_INFOS.clear();
+
+    public static final String CONFIG_FILE = "configurationFile";
+
+    @Getter
+    private final String id;
+
+    @Getter
+    private final String url;
+
+    @Getter
+    private final Schema schema;
+
+    @Getter
+    private Properties properties;
+
+    @Getter
+    @Setter
+    private boolean initialized = false;
+
+    protected int melonSyncCounter;
+
+    public Melonade(String id, String url, Schema schema, Properties properties) {
+        this.url = url;
+        this.schema = schema;
+        this.properties = new Properties(properties);
+        this.id = id;
     }
 
-    public static void close(MelonConnection connection) {
-        CREATED_INFOS.remove(connection.getMelonInfo().getUrl());
-    }
-    
-    public static File getAbsolutePath(String fileName, String reference) {
-        String path = fileName;
-        if (reference != null && !fileName.startsWith("/") && !fileName.startsWith("\\")) {
-            path = reference + File.separator + fileName;
-        }
-        URL url = Melonade.class.getResource(path);
-        if (url == null) {
-            return new File(path);
-        }
-        return new File(url.getFile());
-    }
-    
-    private static SchemaConfig getSchemaConfigFromStream(InputStream stream) {
-        Yaml yaml = new Yaml();
-        return yaml.loadAs(stream, SchemaConfig.class);
-    }
-    
-    public static MelonInfo getOrCreateMelonInfo(String url, Properties properties) throws IOException {
-        MelonInfo melonInfo = CREATED_INFOS.get(url);
-        
-        if (melonInfo == null) {
-            String configFile = url.replaceFirst(Pattern.quote(MelonDriver.MELON_URL_PREFIX), "");
-            File file = getAbsolutePath(configFile, null);
-            SchemaConfig schemaConfig = null;
-            try (InputStream resourceStream = SharpIO.createInputStream(configFile, true)) {
-                if (resourceStream == null) {
-                    try (InputStream fileStream = SharpIO.createInputStream(configFile, false)) {
-                        schemaConfig = getSchemaConfigFromStream(fileStream);
-                    }
-                } else {
-                    schemaConfig = getSchemaConfigFromStream(resourceStream);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Properties infoProperties = new Properties(properties);
-            infoProperties.put(MelonInfo.CONFIG_FILE, file);
-            
-            melonInfo = new MelonInfo(file.getName(), url, schemaConfig.getSchema(infoProperties), infoProperties);
-            CREATED_INFOS.put(url, melonInfo);
-        }
-        
-        return melonInfo;
-    }
-    
-    private static void clearDatabaseTable(Connection connection, Table table) throws SQLException {
+    protected void clearDatabaseTable(Connection connection, Table table) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(table))) {
             ps.execute();
         }
     }
-    
-    public static void syncToDatabase(MelonConnection connection, Table table, List<List<String>> records) throws SQLException {
+
+    protected void syncToDatabase(Connection connection, Table table, List<List<String>> records) throws SQLException {
         clearDatabaseTable(connection, table);
         try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateInsertStatement(table))) {
             final int batchSize = 1000;
@@ -106,42 +68,73 @@ public class Melonade {
         }
         connection.commit();
     }
-    
-    public static void syncToDatabase(MelonConnection melonConnection) throws SQLException, IOException {
-        MelonInfo info = melonConnection.getMelonInfo();
-        
-        for (Table table : info.getSchema().getTables()) {
-            Storage storage = table.getStorage();
-            if (storage == null) {
-                throw new RuntimeException("no storage for " + table);
-            }
-            Boolean storageHasChanges = storage.hasChanges();
-            if (storageHasChanges == null) {
-                createDatabaseSchema(melonConnection, table);
-                storageHasChanges = true;
-            }
-            if (storageHasChanges) {
-                syncToDatabase(melonConnection, table, storage.read());
+
+    public void syncToDatabase(Connection connection) throws SQLException {
+        if (melonSyncCounter == 0) {
+            try {
+                ++melonSyncCounter;
+
+                initializeMelon(connection);
+
+                for (Table table : getSchema().getTables()) {
+                    Storage storage = table.getStorage();
+                    if (storage == null) {
+                        throw new RuntimeException("no storage for " + table);
+                    }
+                    if (storage.hasChanges()) {
+                        syncToDatabase(connection, table, storage.read());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                --melonSyncCounter;
             }
         }
     }
 
-    private static void createDatabaseSchema(MelonConnection connection, Table table) throws SQLException {
+    protected void initializeMelon(Connection connection) throws SQLException {
+        if (isInitialized()) {
+            return;
+        }
+        for (Table table : getSchema().getTables()) {
+            createDatabaseSchemaTable(connection, table);
+        }
+        for (View view : getSchema().getViews()) {
+            createDatabaseSchemaView(connection, view);
+        }
+        setInitialized(true);
+    }
+
+    protected static void createDatabaseSchemaTable(Connection connection, Table table) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateTableStatement(table))) {
             ps.execute();
         }
     }
 
-    public static void syncToStorage(MelonConnection melonConnection) throws SQLException, IOException {
-        MelonInfo info = melonConnection.getMelonInfo();
-
-        for (Table table : info.getSchema().getTables()) {
-            Storage storage = table.getStorage();
-            syncToStorage(melonConnection, table, storage);
+    protected static void createDatabaseSchemaView(Connection connection, View view) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateViewStatement(view))) {
+            ps.execute();
         }
     }
 
-    private static void syncToStorage(MelonConnection connection, Table table, Storage storage) throws SQLException, IOException {
+    public void syncToStorage(Connection connection) throws SQLException {
+        if (melonSyncCounter == 0) {
+            try {
+                ++melonSyncCounter;
+                for (Table table : getSchema().getTables()) {
+                    Storage storage = table.getStorage();
+                    syncToStorage(connection, table, storage);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                --melonSyncCounter;
+            }
+        }
+    }
+
+    protected static void syncToStorage(Connection connection, Table table, Storage storage) throws SQLException, IOException {
         List<List<String>> records = null;
         try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateSelectStatement(table))) {
             try (ResultSet rs = ps.executeQuery()) {

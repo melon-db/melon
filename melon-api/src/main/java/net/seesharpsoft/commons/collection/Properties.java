@@ -6,6 +6,33 @@ import java.util.stream.Collectors;
 
 public class Properties implements Map {
     
+    public static final String DEFAULT_KEY_VALUE_SEPARATOR = "=";
+
+    public static final String COMMENT_LINE_BEGINNING = "#";
+    
+    public static Properties read(File file, String keyValueSeparator) throws IOException {
+        if(!file.exists()) {
+            return null;
+        }
+        Properties result = new Properties();
+        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            reader.lines().forEach(line -> {
+                String trimmedLine = line.trim();
+                if (!trimmedLine.startsWith(COMMENT_LINE_BEGINNING)) {
+                    int splitIndex = trimmedLine.indexOf(keyValueSeparator);
+                    if (splitIndex != -1) {
+                        result.put(trimmedLine.substring(0, splitIndex).trim(), trimmedLine.substring(splitIndex + 1).trim());
+                    }
+                }
+            });
+        }
+        return result;
+    }
+
+    public static Properties read(File file) throws IOException {
+        return read(file, DEFAULT_KEY_VALUE_SEPARATOR);
+    }
+    
     private final Map properties;
 
     private final Properties parentProperties;
@@ -42,6 +69,10 @@ public class Properties implements Map {
         }
         return (T)value;
     }
+    
+    public <T> T getOrDefault(String key, T fallback) {
+        return (T)getOrDefault((Object)key, fallback);
+    } 
 
     public <T> T remove(String key) {
         return (T)properties.remove(key);
@@ -61,17 +92,17 @@ public class Properties implements Map {
 
     @Override
     public boolean isEmpty() {
-        return properties.isEmpty() && parentProperties.isEmpty();
+        return properties.isEmpty() && (parentProperties == null || parentProperties.isEmpty());
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return properties.containsKey(key) || parentProperties.containsKey(key);
+        return properties.containsKey(key) || (parentProperties != null && parentProperties.containsKey(key));
     }
 
     @Override
     public boolean containsValue(Object value) {
-        return properties.containsValue(value) || parentProperties.containsValue(value);
+        return properties.containsValue(value) || (parentProperties != null && parentProperties.containsValue(value));
     }
 
     @Override
@@ -113,7 +144,7 @@ public class Properties implements Map {
         return result;
     }
     
-    public void store(File file, boolean deep) throws IOException {
+    public void store(File file, String keyValueSeparator, boolean deep) throws IOException {
         if(!file.exists()) {
             if (!file.createNewFile()) {
                 throw new IOException("can not create file " + file);
@@ -125,7 +156,7 @@ public class Properties implements Map {
             for (Entry entry : entries) {
                 if (entry.getKey() != null) {
                     writer.write(entry.getKey().toString());
-                    writer.write('=');
+                    writer.write(keyValueSeparator);
                     Object value = entry.getValue();
                     writer.write(value == null ? "" : value.toString());
                     writer.newLine();
@@ -134,23 +165,16 @@ public class Properties implements Map {
         }
     }
 
-    public static Properties read(File file) throws IOException {
-        if(!file.exists()) {
-            return null;
-        }
-        Properties result = new Properties();
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            reader.lines().forEach(line -> {
-                String trimmedLine = line.trim();
-                if (!trimmedLine.startsWith("#")) {
-                    int splitIndex = trimmedLine.indexOf('=');
-                    if (splitIndex != -1) {
-                        result.put(trimmedLine.substring(0, splitIndex).trim(), trimmedLine.substring(splitIndex + 1).trim());
-                    }
-                }
-            });
-        }
-        return result;
+    public void store(File file, String keyValueSeparator) throws IOException {
+        store(file, keyValueSeparator, true);
+    }
+    
+    public void store(File file, boolean deep) throws IOException {
+        store(file, DEFAULT_KEY_VALUE_SEPARATOR, deep);
+    }
+
+    public void store(File file) throws IOException {
+        store(file, DEFAULT_KEY_VALUE_SEPARATOR);
     }
     
     public java.util.Properties legacy() {

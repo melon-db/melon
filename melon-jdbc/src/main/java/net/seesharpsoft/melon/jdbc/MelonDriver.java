@@ -1,7 +1,7 @@
 package net.seesharpsoft.melon.jdbc;
 
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.Melonade;
+import net.seesharpsoft.melon.MelonadeFactory;
 import org.h2.message.DbException;
 
 import java.sql.Connection;
@@ -43,7 +43,7 @@ public class MelonDriver extends org.h2.Driver {
             if (!acceptsURL(url)) {
                 return null;
             }
-            return new MelonConnection(Melonade.getOrCreateMelonInfo(url, properties));
+            return new MelonConnection(MelonadeFactory.INSTANCE.getOrCreateMelonade(url, properties));
         } catch (Exception e) {
             throw DbException.toSQLException(e);
         }

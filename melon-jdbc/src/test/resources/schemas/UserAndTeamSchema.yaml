@@ -3,6 +3,7 @@ tables:
   - name: User
     columns:
       - name: id
+        primary: true
       - name: firstName
       - name: lastName
       - name: additional
@@ -13,12 +14,15 @@ tables:
   - name: Team
     columns:
       - name: id
+        primary: true
       - name: name
     storage:
       location: ../data/Team.properties
   - name: TeamMembers
     columns:
       - name: teamId
+        primary: true
       - name: userId
+        primary: true
     storage:
       location: ../data/TeamMembers.csv

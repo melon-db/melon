@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.Table;
+import net.seesharpsoft.melon.View;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ public class SchemaImpl implements Schema {
     protected final Properties properties;
     
     protected final Set<Table> tables;
+
+    protected final Set<View> views;
     
     @Getter
     private final String name;
@@ -23,6 +26,7 @@ public class SchemaImpl implements Schema {
         this.name = name;
         this.properties = new Properties(properties);
         this.tables = new HashSet<>();
+        this.views = new HashSet<>();
     }
 
     @Override
@@ -33,4 +37,14 @@ public class SchemaImpl implements Schema {
     public void addTable(Table table) {
         this.tables.add(table);
     }
+    
+    @Override
+    public Set<View> getViews() {
+        return Collections.unmodifiableSet(views);
+    }
+
+    public void addView(View view) {
+        this.views.add(view);
+    }
+
 }

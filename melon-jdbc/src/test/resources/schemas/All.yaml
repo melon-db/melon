@@ -3,6 +3,7 @@ tables:
   - name: User
     columns:
       - name: id
+        primary: true
       - name: firstName
       - name: lastName
       - name: additional
@@ -13,18 +14,22 @@ tables:
   - name: Team
     columns:
       - name: id
+        primary: true
       - name: name
     storage:
       location: ../data/Team.properties
   - name: TeamMembers
     columns:
       - name: teamId
+        primary: true
       - name: userId
+        primary: true
     storage:
       location: ../data/TeamMembers.csv
   - name: Address
     columns:
       - name: id
+        primary: true
       - name: city
       - name: country
       - name: userId
@@ -32,3 +37,19 @@ tables:
       location: ../data/Address.xml
       properties:
         path: /ADDRESS/DATA_RECORD
+views:
+  - name: UserWithAddresses
+    query: >
+      SELECT u.*, a.id as AddressId, a.City, a.Country
+      FROM User u
+      LEFT OUTER JOIN Address a
+        ON a.userId = u.id
+  - name: TeamsAndUsers
+    query: >
+      SELECT t.id, t.name, u.firstName, u.lastName
+      FROM Team t
+      LEFT OUTER JOIN TeamMembers tm
+        ON tm.teamId = t.id
+      LEFT OUTER JOIN User u
+        ON u.id = tm.userId
+      ORDER BY t.name

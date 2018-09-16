@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<ADDRESS>
+    <DATA_RECORD>
+        <id>1</id>
+        <city>Las Vegas</city>
+        <country>US</country>
+        <userId></userId>
+    </DATA_RECORD>
+    <DATA_RECORD>
+        <id>2</id>
+        <city>Mexico City</city>
+        <country>Mexico</country>
+        <userId></userId>
+    </DATA_RECORD>
+</ADDRESS>

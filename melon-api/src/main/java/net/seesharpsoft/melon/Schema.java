@@ -20,4 +20,16 @@ public interface Schema extends PropertiesOwner {
         }
         return null;
     }
+
+    Set<View> getViews();
+
+    default View getView(String name) {
+        Objects.requireNonNull(name, "name must not be null!");
+        for (View view : this.getViews()) {
+            if (name.equalsIgnoreCase(view.getName())) {
+                return view;
+            }
+        }
+        return null;
+    }
 }

@@ -1,7 +1,6 @@
 package net.seesharpsoft.melon.impl;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
@@ -17,6 +16,10 @@ public class ColumnImpl implements Column {
     
     @Getter
     protected final String name;
+    
+    @Getter
+    @Setter
+    protected boolean primary = false;
     
     public ColumnImpl(Table table, String name, Properties properties) {
         this.table = table;
