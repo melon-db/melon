@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Project Melon creates a database abstraction from arbitrary structured files to enable the use of SQL for reading, combining and manipulating data.
+Project Melon creates a database abstraction for arbitrary structured files to enable the use of SQL for reading, combining and manipulating data.
 
 ## Goals
 
