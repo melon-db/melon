@@ -6,7 +6,7 @@ Project Melon creates a database abstraction from arbitrary structured files to 
 
 ## Goals
 
-1. Maintaining data files (e.g. CSV, XML, etc.) in a structured environment instead of a text editor (YES: read AND write - it is not an importer!)
+1. Maintaining data files (e.g. CSV, XML, etc.) in a proper environment that supports structured data instead of a text editor... YES: read AND write - it is not an importer!
 2. Simple API to enable support for all kind of (custom) file formats
 3. Simple but flexible configuration
 
@@ -15,6 +15,7 @@ Project Melon creates a database abstraction from arbitrary structured files to 
 ### v0.1.0
 
 - JDBC driver backed by [H2 in memory database](https://github.com/h2database/h2database)
+- succesfully tested with JDBC supporting database tools as [DBeaver](https://dbeaver.io/) (community edition available) and [DataGrip](https://www.jetbrains.com/datagrip/) (commercial, integrated in [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/))
 - support for .csv, .xml and .properties files
 - YAML configuration with properties section for custom extensions
 - configuration of tables (and their source), columns and views
