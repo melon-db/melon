@@ -13,9 +13,21 @@ Project Melon creates a database abstraction from arbitrary structured files to 
 ## State
 
 ### v0.1.0
+
 - JDBC driver backed by [H2 in memory database](https://github.com/h2database/h2database)
 - support for .csv, .xml and .properties files
 - YAML configuration with properties section for custom extensions
+- configuration of tables (and their source), columns and views
+
+## Next steps
+
+- documentation with examples
+- support for AUTO COMMIT (currently manual commit required to update files with changes)
+- support for arbitrary databases as backbone
+- support for JSON, Html and Excel files
+- extended schema definition (e.g. value transformation & data types)
+- smarter data sync (e.g. check for existing entities, update only what/when necessary, merge with existing data)
+- support for data relation (e.g. combine data from different files into one *editable* table)
 
 ## Disclaimer
 
