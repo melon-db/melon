@@ -12,6 +12,10 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.1.1
+
+- support for AUTO COMMIT ~(currently manual commit required to update files with changes)~
+
 ### v0.1.0
 
 - JDBC driver backed by [H2 in memory database](https://github.com/h2database/h2database)
@@ -23,7 +27,6 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 ## Next steps
 
 - documentation with examples
-- support for AUTO COMMIT (currently manual commit required to update files with changes)
 - support for arbitrary databases as backbone
 - support for JSON, Html and Excel files
 - extended schema definition (e.g. value transformation & data types)
