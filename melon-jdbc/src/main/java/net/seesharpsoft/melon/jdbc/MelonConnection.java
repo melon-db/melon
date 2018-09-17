@@ -1,5 +1,6 @@
 package net.seesharpsoft.melon.jdbc;
 
+import lombok.Getter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Melonade;
 import net.seesharpsoft.melon.MelonadeFactory;
@@ -21,6 +22,7 @@ public class MelonConnection extends org.h2.jdbc.JdbcConnection {
         return properties.legacy();
     }
     
+    @Getter
     protected Melonade melonade;
     
     public MelonConnection(Melonade melonade) throws SQLException {

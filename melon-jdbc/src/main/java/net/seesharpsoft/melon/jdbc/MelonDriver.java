@@ -2,6 +2,7 @@ package net.seesharpsoft.melon.jdbc;
 
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.MelonadeFactory;
+import org.h2.Driver;
 import org.h2.message.DbException;
 
 import java.sql.Connection;
@@ -16,6 +17,8 @@ public class MelonDriver extends org.h2.Driver {
     public static final String MELON_URL_PREFIX = "jdbc:melon:";
     
     private static final MelonDriver INSTANCE = new MelonDriver();
+
+    private static volatile boolean registered;
     
     static {
         try {
@@ -47,5 +50,20 @@ public class MelonDriver extends org.h2.Driver {
         } catch (Exception e) {
             throw DbException.toSQLException(e);
         }
+    }
+
+    /**
+     * INTERNAL
+     */
+    public static synchronized Driver load() {
+        try {
+            if (!registered) {
+                registered = true;
+                DriverManager.registerDriver(INSTANCE);
+            }
+        } catch (SQLException e) {
+            DbException.traceThrowable(e);
+        }
+        return INSTANCE;
     }
 }

@@ -1,34 +1,97 @@
 package net.seesharpsoft.melon.html;
 
-import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.impl.ColumnImpl;
-import net.seesharpsoft.melon.impl.TableImpl;
-import net.seesharpsoft.melon.storage.XmlStorage;
+import net.seesharpsoft.commons.util.SharpIO;
+import net.seesharpsoft.melon.MelonHelper;
+import net.seesharpsoft.melon.Storage;
+import net.seesharpsoft.melon.jdbc.MelonConnection;
+import net.seesharpsoft.melon.jdbc.MelonDriver;
+import net.seesharpsoft.melon.test.TestHelper;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class HtmlStorageUT {
 
+    private static final String[] TEST_FILES = new String[] {
+            "/Simple.yaml",
+            "/data/SimpleText.html"
+    };
 
-    @Test
-    public void should_parse_simple_html() throws IOException {
-        TableImpl table = new TableImpl("Text", new Properties());
-        ColumnImpl column = new ColumnImpl(table, "id", new Properties());
-        table.addColumn(column);
-        column = new ColumnImpl(table, "title", new Properties());
-        table.addColumn(column);
-        Properties properties = new Properties();
-        HtmlStorage storage = new HtmlStorage(table, properties, new File(getClass().getResource("/data/SimpleText.html").getFile()));
-
-        List<List<String>> data = storage.read();
-
-        assertThat(data.size(), is(4));
+    @Before
+    public void beforeEach() throws IOException {
+        TestHelper.createBackupFiles(TEST_FILES);
     }
 
+    @After
+    public void afterEach() throws IOException {
+        TestHelper.restoreBackupFiles(TEST_FILES);
+    }
+    
+    @Test
+    public void should_parse_fieldInfo_correctly() throws SQLException {
+        MelonDriver.load();
+        
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+            assertThat(connection, instanceOf(MelonConnection.class));
+
+            MelonConnection melonConnection = (MelonConnection) connection;
+            Map<String, String> map = melonConnection.getMelonade().getSchema().getTable("Text").getStorage().getProperties().getOrDefault(HtmlStorage.PROPERTY_COLUMN_ATTRIBUTES, null);
+            
+            assertThat(map.size(), is(3));
+            assertThat(map.get("type"), is("field"));
+            assertThat(map.get("index"), is("$index$"));
+            assertThat(map.get("name"), is("$name$"));
+        }
+    }
+
+    @Test
+    public void should_parse_html() throws SQLException, IOException {
+        MelonDriver.load();
+        
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+            assertThat(connection, instanceOf(MelonConnection.class));
+
+            MelonConnection melonConnection = (MelonConnection) connection;
+            Storage storage = melonConnection.getMelonade().getSchema().getTable("Text").getStorage();
+            
+            List<List<String>> entries = storage.read();
+            
+            assertThat(entries.size(), is(3));
+            assertThat(entries.get(0), is(Arrays.asList("0", "Title A", "Text A")));
+            assertThat(entries.get(1), is(Arrays.asList("1", "Title B", "Text B")));
+            assertThat(entries.get(2), is(Arrays.asList("2", "1 to 10", "One to ten")));
+        }
+    }
+
+    @Test
+    public void should_write_html() throws SQLException, IOException {
+        MelonDriver.load();
+
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+            assertThat(connection, instanceOf(MelonConnection.class));
+
+            MelonConnection melonConnection = (MelonConnection) connection;
+            Storage storage = melonConnection.getMelonade().getSchema().getTable("Text").getStorage();
+
+            List<List<String>> entries = storage.read();
+
+            storage.write(entries);
+            
+            assertThat(SharpIO.readAsString(MelonHelper.getFile("/data/SimpleText.html").getAbsolutePath()),
+                    is(SharpIO.readAsString(MelonHelper.getFile("/results/SimpleText.html").getAbsolutePath())));
+        }
+    }
+    
 }

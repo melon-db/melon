@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     testCompile project(':melon-jdbc')
+    testCompile project(path: ':melon-api', configuration: 'testFixtures')
     compile 'org.jsoup:jsoup:1.11.3'
     compile project(':melon-api')
 }

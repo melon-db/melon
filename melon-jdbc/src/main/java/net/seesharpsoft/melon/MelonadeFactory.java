@@ -9,7 +9,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -25,21 +24,9 @@ public class MelonadeFactory {
     }
 
     public void remove(Melonade melonade) {
-        CREATED_INFOS.remove(melonade);
+        CREATED_INFOS.remove(melonade.getUrl());
     }
-
-    public static File getAbsolutePath(String fileName, String reference) {
-        String path = fileName;
-        if (reference != null && !fileName.startsWith("/") && !fileName.startsWith("\\")) {
-            path = reference + File.separator + fileName;
-        }
-        URL url = Melonade.class.getResource(path);
-        if (url == null) {
-            return new File(path);
-        }
-        return new File(url.getFile());
-    }
-
+    
     private static SchemaConfig getSchemaConfigFromStream(InputStream stream) {
         Yaml yaml = new Yaml();
         return yaml.loadAs(stream, SchemaConfig.class);
@@ -50,7 +37,7 @@ public class MelonadeFactory {
 
         if (melonade == null) {
             String configFile = url.replaceFirst(Pattern.quote(MelonDriver.MELON_URL_PREFIX), "");
-            File file = getAbsolutePath(configFile, null);
+            File file = MelonHelper.getFile(configFile, null);
             SchemaConfig schemaConfig = null;
             try (InputStream resourceStream = SharpIO.createInputStream(configFile, true)) {
                 if (resourceStream == null) {

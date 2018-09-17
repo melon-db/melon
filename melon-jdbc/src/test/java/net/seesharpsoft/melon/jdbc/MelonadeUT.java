@@ -1,8 +1,9 @@
 package net.seesharpsoft.melon.jdbc;
 
-import net.seesharpsoft.melon.MelonadeFactory;
 import net.seesharpsoft.melon.Storage;
+import net.seesharpsoft.melon.test.TestHelper;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -19,9 +20,23 @@ import static org.junit.Assert.assertThat;
 
 public class MelonadeUT {
 
+    private static final String[] TEST_FILES = new String[] {
+            "/schemas/UserOnlySchema.yaml",
+            "/data/Address.xml",
+            "/data/Team.properties",
+            "/data/User.csv",
+            "/files/Address_new.xml",
+            "/files/Address_Test.xml"
+    };
+
+    @Before
+    public void beforeEach() throws IOException {
+        TestHelper.createBackupFiles(TEST_FILES);
+    }
+
     @After
-    public void afterEach() {
-        MelonadeFactory.INSTANCE.clear();
+    public void afterEach() throws IOException {
+        TestHelper.restoreBackupFiles(TEST_FILES);
     }
     
     @Test

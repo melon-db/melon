@@ -13,7 +13,7 @@ public class StorageConfig extends ConfigBase {
         Properties finalProperties = getProperties(additionalProperties);
         try {
             if (location != null && !location.isEmpty()) {
-                File targetFile = MelonadeFactory.getAbsolutePath(location, ((File) additionalProperties.get(Melonade.CONFIG_FILE)).getParentFile().getAbsolutePath());
+                File targetFile = MelonHelper.getFile(location, ((File) additionalProperties.get(Melonade.CONFIG_FILE)).getParentFile().getAbsolutePath());
 
                 return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, targetFile);
             }

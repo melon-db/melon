@@ -2,8 +2,20 @@ name: dummy
 tables:
   - name: Text
     columns:
-      - name: id
+      - name: index
         primary: true
-      - name: text
+      - name: Title
+      - name: Text
     storage:
       location: data/SimpleText.html
+      properties:
+        head: >
+          <meta httpequiv="content-type" content="text/html" charset="utf-8">
+        columnAttributes:
+          type: field
+          index: $index$
+          name: $name$
+        recordAttributes:
+          type: record
+          index: $column:index$
+        format: List
