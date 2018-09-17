@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    testCompile project(':melon-jdbc')
+    compile 'org.jsoup:jsoup:1.11.3'
+    compile project(':melon-api')
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

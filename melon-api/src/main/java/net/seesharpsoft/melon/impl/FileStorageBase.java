@@ -29,6 +29,10 @@ public abstract class FileStorageBase extends StorageBase {
         }
     }
 
+    protected String getCharset() {
+        return this.properties.getOrDefault(PROPERTY_CHARSET, DEFAULT_CHARSET);
+    }
+
     @Override
     protected long getLastModified() {
         return file.lastModified();

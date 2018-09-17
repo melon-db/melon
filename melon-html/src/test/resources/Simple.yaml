@@ -1,0 +1,9 @@
+name: dummy
+tables:
+  - name: Text
+    columns:
+      - name: id
+        primary: true
+      - name: text
+    storage:
+      location: data/SimpleText.html

@@ -32,7 +32,7 @@ public class CsvStorage extends FileStorageBase {
         List<List<String>> records = new ArrayList<>();
         List<String> columnNames = table.getColumns().stream().map(Column::getName).collect(Collectors.toList());
         Csv csv = new Csv();
-        try(ResultSet rs  = csv.read(file.getAbsolutePath(), columnNames.toArray(new String[0]), properties.getOrDefault(PROPERTY_CHARSET, DEFAULT_CHARSET))) {
+        try(ResultSet rs  = csv.read(file.getAbsolutePath(), columnNames.toArray(new String[0]), getCharset())) {
             records = SqlHelper.fromResultSet(rs);
             if (ignoreHeader() && !records.isEmpty()) {
                 records.remove(0);
@@ -48,7 +48,7 @@ public class CsvStorage extends FileStorageBase {
         Csv csv = new Csv();
         csv.setWriteColumnHeader(ignoreHeader());
         try (ResultSet rs = SqlHelper.toResultSet(table, records)) {
-            csv.write(file.getAbsolutePath(), rs, properties.getOrDefault(PROPERTY_CHARSET, DEFAULT_CHARSET));
+            csv.write(file.getAbsolutePath(), rs, getCharset());
         } catch (SQLException e) {
             e.printStackTrace();
         }
