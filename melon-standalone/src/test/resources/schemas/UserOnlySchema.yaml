@@ -1,0 +1,11 @@
+name: dummy
+tables:
+  - name: User
+    columns:
+      - name: id
+        primary: true
+      - name: firstName
+      - name: lastName
+      - name: additional
+    storage:
+      location: ../data/User.csv

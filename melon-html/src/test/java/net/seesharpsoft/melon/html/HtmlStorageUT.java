@@ -4,7 +4,7 @@ import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonDriver;
+import net.seesharpsoft.melon.jdbc.MelonadeDriver;
 import net.seesharpsoft.melon.test.TestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +32,7 @@ public class HtmlStorageUT {
     @Before
     public void beforeEach() throws IOException {
         TestHelper.createBackupFiles(TEST_FILES);
+        MelonadeDriver.load();
     }
 
     @After
@@ -41,13 +42,11 @@ public class HtmlStorageUT {
     
     @Test
     public void should_parse_fieldInfo_correctly() throws SQLException {
-        MelonDriver.load();
-        
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            Map<String, String> map = melonConnection.getMelonade().getSchema().getTable("Text").getStorage().getProperties().getOrDefault(HtmlStorage.PROPERTY_COLUMN_ATTRIBUTES, null);
+            Map<String, String> map = melonConnection.getMelon().getSchema().getTable("Text").getStorage().getProperties().getOrDefault(HtmlStorage.PROPERTY_COLUMN_ATTRIBUTES, null);
             
             assertThat(map.size(), is(3));
             assertThat(map.get("type"), is("field"));
@@ -58,13 +57,11 @@ public class HtmlStorageUT {
 
     @Test
     public void should_parse_html() throws SQLException, IOException {
-        MelonDriver.load();
-        
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            Storage storage = melonConnection.getMelonade().getSchema().getTable("Text").getStorage();
+            Storage storage = melonConnection.getMelon().getSchema().getTable("Text").getStorage();
             
             List<List<String>> entries = storage.read();
             
@@ -77,13 +74,11 @@ public class HtmlStorageUT {
 
     @Test
     public void should_write_html() throws SQLException, IOException {
-        MelonDriver.load();
-
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDriver.MELON_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
-            Storage storage = melonConnection.getMelonade().getSchema().getTable("Text").getStorage();
+            Storage storage = melonConnection.getMelon().getSchema().getTable("Text").getStorage();
 
             List<List<String>> entries = storage.read();
 

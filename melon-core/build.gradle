@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+configurations {
+    testFixtures
+}
+
+dependencies {
+    testFixtures sourceSets.test.output
+    compile 'org.yaml:snakeyaml:1.23'
+    compile "org.apache.commons:commons-csv:1.5"
+    compile 'net.seesharpsoft.sharping:sharping-commons:0.11.0'
+
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
