@@ -12,6 +12,12 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.2.0
+
+- support for arbitrary databases as backbone
+- support for Html files
+- project structure rework
+
 ### v0.1.1
 
 - support for AUTO COMMIT ~(currently manual commit required to update files with changes)~
@@ -27,8 +33,7 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 ## Next steps
 
 - documentation with examples
-- support for arbitrary databases as backbone
-- support for JSON, Html and Excel files
+- support for JSON and Excel files
 - extended schema definition (e.g. value transformation & data types)
 - smarter data sync (e.g. check for existing entities, update only what/when necessary, merge with existing data)
 - support for data relation (e.g. combine data from different files into one *editable* table)
