@@ -6,7 +6,7 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## Goals
 
-1. Maintaining data files (e.g. CSV, XML, etc.) in a proper environment that supports structured data instead of a text editor... YES: read AND write - it is not an importer!
+1. Maintaining data files (e.g. CSV, XML, etc.) in a proper environment that supports structured data instead of using a plain text editor... YES: read AND write - it is not an importer!
 2. Simple API to enable support for all kind of (custom) file formats
 3. Simple but flexible configuration
 
