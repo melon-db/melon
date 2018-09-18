@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SeeSharpSoft/melon.svg?branch=master)](https://travis-ci.org/SeeSharpSoft/melon)
+[![Build Status](https://travis-ci.org/melon-db/melon.svg?branch=master)](https://travis-ci.org/melon-db/melon)
 
 # Melon
 
