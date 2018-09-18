@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/SeeSharpSoft/melon.svg?branch=master)](https://travis-ci.org/SeeSharpSoft/melon)
+
 # Melon
 
 ## Abstract
