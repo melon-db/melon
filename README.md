@@ -12,6 +12,12 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.3.0
+
+- project structure rework *again*
+- [Travis CI](https://travis-ci.org/SeeSharpSoft/melon)
+- [ShadowJar](https://github.com/johnrengelman/shadow)
+
 ### v0.2.0
 
 - support for arbitrary databases as backbone
