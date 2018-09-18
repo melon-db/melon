@@ -19,7 +19,7 @@ public class XmlStorageUT {
 
     private static final String[] TEST_FILES = new String[] {
             "/data/Address.xml",
-            "/files/Address_new.xml",
+            "/files/Address_New.xml",
             "/files/Address_Test.xml"
     };
 
