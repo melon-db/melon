@@ -49,7 +49,7 @@ public class MelonHelper {
     public static File getFile(String fileName, String reference) {
         String path = fileName;
         if (reference != null && !fileName.startsWith("/") && !fileName.startsWith("\\")) {
-            path = reference + File.separator + fileName;
+            path = reference + "/" + fileName;
         }
         URL url = MelonHelper.class.getResource(path);
         if (url == null) {
