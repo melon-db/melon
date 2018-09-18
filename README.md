@@ -43,7 +43,7 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 - documentation with examples
 - support for JSON and Excel files
 - extended schema definition (e.g. value transformation & data types)
-- smarter data sync (e.g. check for existing entities, update only what/when necessary, merge with existing data)
+- smarter data sync (e.g. check for existing entities, update only what/when necessary, merge with existing data, file watcher, ...)
 - support for data relation (e.g. combine data from different files into one *editable* table)
 
 ## Disclaimer
