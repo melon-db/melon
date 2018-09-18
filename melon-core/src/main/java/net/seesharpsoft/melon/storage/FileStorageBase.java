@@ -1,4 +1,4 @@
-package net.seesharpsoft.melon.impl;
+package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Table;

@@ -3,7 +3,6 @@ package net.seesharpsoft.melon.storage;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.impl.FileStorageBase;
 
 import javax.xml.stream.*;
 import java.io.File;

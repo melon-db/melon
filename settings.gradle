@@ -11,5 +11,5 @@ rootProject.name = 'melon'
 
 include 'melon-core'
 include 'melon-html'
+include 'melon-csv'
 include 'melon-standalone'
-

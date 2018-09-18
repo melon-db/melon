@@ -55,6 +55,7 @@ public class MelonadeDriver extends MelonDriver {
             if (!registered) {
                 registered = true;
                 DriverManager.registerDriver(INSTANCE);
+                org.h2.Driver.load();
             }
         } catch (SQLException e) {
             e.printStackTrace();

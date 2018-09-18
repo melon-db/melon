@@ -51,9 +51,8 @@ public class MelonUT {
     public void should_create_correct_config_object_from_yaml_and_have_data_loaded() throws SQLException {
         try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
-
-            MelonConnection melonConnection = (MelonConnection) connection;
-            ResultSet rs = melonConnection.prepareStatement("SELECT * FROM User ORDER BY ID").executeQuery();
+            
+            ResultSet rs = connection.prepareStatement("SELECT * FROM User ORDER BY ID").executeQuery();
             rs.next();
             assertThat(rs.getString("firstName"), is("Fritz"));
             assertThat(rs.getString("lastname"), is("Fuchs"));

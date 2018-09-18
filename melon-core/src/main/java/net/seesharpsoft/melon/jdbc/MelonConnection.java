@@ -17,7 +17,7 @@ public class MelonConnection extends ConnectionWrapper {
     }
 
     public static final String getDelegateConnectionUrl(String connectionUrl, Properties properties) {
-        return connectionUrl.replaceFirst("\\:melon", "");
+        return connectionUrl.replaceFirst("\\:melon\\:", ":");
     }
 
     public static final Properties getDelegateConnectionProperties(String connectionUrl, Properties properties) {
@@ -32,7 +32,7 @@ public class MelonConnection extends ConnectionWrapper {
     public MelonConnection(String url, Properties properties) throws SQLException, IOException {
         super(DriverManager.getConnection(getDelegateConnectionUrl(url, properties), getDelegateConnectionProperties(url, properties)));
 
-        melon = MelonFactory.INSTANCE.getOrCreateMelonade(url, properties);
+        melon = MelonFactory.INSTANCE.getOrCreateMelon(url, properties);
         melon.syncToDatabase(this);
     }
     

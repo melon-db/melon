@@ -34,7 +34,7 @@ public class MelonFactory {
         return yaml.loadAs(stream, SchemaConfig.class);
     }
 
-    public Melon getOrCreateMelonade(String url, java.util.Properties properties) throws IOException {
+    public Melon getOrCreateMelon(String url, java.util.Properties properties) throws IOException {
         Melon melon = CREATED_INFOS.get(url);
 
         if (melon == null) {

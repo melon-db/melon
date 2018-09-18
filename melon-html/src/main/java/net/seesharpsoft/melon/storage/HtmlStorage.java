@@ -1,11 +1,11 @@
-package net.seesharpsoft.melon.html;
+package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.ReferenceType;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.impl.FileStorageBase;
+import net.seesharpsoft.melon.storage.FileStorageBase;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

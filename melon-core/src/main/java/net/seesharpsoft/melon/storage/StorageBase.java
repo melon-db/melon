@@ -1,4 +1,4 @@
-package net.seesharpsoft.melon.impl;
+package net.seesharpsoft.melon.storage;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -3,8 +3,7 @@ plugins {
 }
 
 dependencies {
-    testCompile project(path: ':melon-core', configuration: 'testFixtures')
-    compile project(':melon-core')
+    compile rootProject
     compile 'com.h2database:h2:1.4.197'
 }
 

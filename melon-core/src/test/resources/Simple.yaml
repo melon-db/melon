@@ -1,0 +1,13 @@
+name: dummy
+tables:
+  - name: Address
+    columns:
+      - name: id
+        primary: true
+      - name: city
+      - name: country
+      - name: userId
+    storage:
+      location: data/Address.xml
+      properties:
+        path: /ADDRESS/DATA_RECORD

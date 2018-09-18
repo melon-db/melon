@@ -1,3 +1,2 @@
-net.seesharpsoft.melon.storage.CsvStorageAdapter
 net.seesharpsoft.melon.storage.PropertiesStorageAdapter
 net.seesharpsoft.melon.storage.XmlStorageAdapter

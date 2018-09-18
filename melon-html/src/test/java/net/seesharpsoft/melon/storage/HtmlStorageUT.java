@@ -1,4 +1,4 @@
-package net.seesharpsoft.melon.html;
+package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.MelonHelper;

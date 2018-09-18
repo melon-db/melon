@@ -2,7 +2,6 @@ package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.impl.FileStorageBase;
 
 import java.io.File;
 import java.io.IOException;

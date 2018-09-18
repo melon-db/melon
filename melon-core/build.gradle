@@ -8,10 +8,9 @@ configurations {
 
 dependencies {
     testFixtures sourceSets.test.output
+    testCompile 'com.h2database:h2:1.4.197'
     compile 'org.yaml:snakeyaml:1.23'
-    compile "org.apache.commons:commons-csv:1.5"
     compile 'net.seesharpsoft.sharping:sharping-commons:0.11.0'
-
 }
 
 jar {

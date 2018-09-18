@@ -3,7 +3,7 @@ package net.seesharpsoft.melon.storage;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.impl.FileStorageBase;
+import net.seesharpsoft.melon.storage.FileStorageBase;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
