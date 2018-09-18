@@ -11,7 +11,7 @@ import java.sql.*;
 import java.util.Properties;
 
 public class MelonConnection extends ConnectionWrapper {
-    
+
     public static final String getConfigFilePath(String connectionUrl, Properties properties) {
         return properties.getOrDefault(Constants.PROPERTY_CONFIG_FILE, Constants.DEFAULT_CONFIG_FILE).toString();
     }
@@ -23,26 +23,34 @@ public class MelonConnection extends ConnectionWrapper {
     public static final Properties getDelegateConnectionProperties(String connectionUrl, Properties properties) {
         Properties finalProperties = new Properties(properties);
         finalProperties.put("AUTOCOMMIT", "false");
+        String driverClass = finalProperties.getProperty("driver");
+        if (driverClass != null) {
+            try {
+                Class.forName(driverClass);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         return finalProperties;
     }
-    
+
     @Getter
     protected Melon melon;
-    
+
     public MelonConnection(String url, Properties properties) throws SQLException, IOException {
         super(DriverManager.getConnection(getDelegateConnectionUrl(url, properties), getDelegateConnectionProperties(url, properties)));
 
         melon = MelonFactory.INSTANCE.getOrCreateMelon(url, properties);
         melon.syncToDatabase(this);
     }
-    
+
     @Override
     public synchronized void close() throws SQLException {
         super.close();
 
         MelonFactory.INSTANCE.remove(melon);
     }
-    
+
     @Override
     public synchronized void commit() throws SQLException {
         super.commit();
@@ -81,7 +89,7 @@ public class MelonConnection extends ConnectionWrapper {
             throws SQLException {
         return new MelonPreparedStatement(melon, super.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
-    
+
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         return new MelonPreparedStatement(melon, super.prepareStatement(sql));

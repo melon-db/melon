@@ -72,9 +72,9 @@ public class SqlHelper {
         }
         return builder.toString();
     }
-    
+
     public static String generateCreateTableStatement(Table table) {
-        StringBuilder builder = new StringBuilder("CREATE TABLE ")
+        StringBuilder builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                 .append(table.getName())
                 .append(" (");
 
@@ -85,7 +85,14 @@ public class SqlHelper {
             if (column.isPrimary()) {
                 primaryColumns.add(column.getName());
             }
-            builder.append(column.getName()).append(" VARCHAR");
+            builder.append(column.getName());
+            if (primaryColumns.contains(column.getName())) {
+                builder.append(" VARCHAR(")
+                        .append(column.getProperties().getOrDefault("size", 2000))
+                        .append(")");
+            } else {
+                builder.append(" TEXT");
+            }
             if (++i < columnLength) {
                 builder.append(",");
             }
@@ -97,12 +104,12 @@ public class SqlHelper {
                     .append(")");
         }
         builder.append(")");
-        
+
         return builder.toString();
     }
 
     public static String generateCreateViewStatement(View view) {
-        StringBuilder builder = new StringBuilder("CREATE VIEW ")
+        StringBuilder builder = new StringBuilder("CREATE VIEW IF NOT EXISTS ")
                 .append(view.getName())
                 .append(" AS ")
                 .append(view.getQuery());
@@ -133,7 +140,7 @@ public class SqlHelper {
         }
         return recordList;
     }
-    
+
     private SqlHelper() {
         // static
     }
