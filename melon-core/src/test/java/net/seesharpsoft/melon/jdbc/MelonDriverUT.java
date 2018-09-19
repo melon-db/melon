@@ -1,36 +1,27 @@
 package net.seesharpsoft.melon.jdbc;
 
 import net.seesharpsoft.melon.Constants;
-import net.seesharpsoft.melon.test.TestHelper;
-import org.junit.After;
-import org.junit.Before;
+import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MelonDriverUT {
+public class MelonDriverUT extends TestFixture {
 
-    private static final String[] TEST_FILES = new String[] {
-            "/Simple.yaml",
-            "/data/Address.xml"
-    };
-
-    @Before
-    public void beforeEach() throws IOException {
-        TestHelper.createBackupFiles(TEST_FILES);
-    }
-
-    @After
-    public void afterEach() throws IOException {
-        TestHelper.restoreBackupFiles(TEST_FILES);
+    @Override
+    public String[] getResourceFiles() {
+        return new String[] {
+                "/Simple.yaml",
+                "/data/Address.xml"
+        };
     }
     
     @Test

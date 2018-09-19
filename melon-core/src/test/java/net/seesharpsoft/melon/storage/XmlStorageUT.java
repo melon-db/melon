@@ -4,9 +4,7 @@ import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
-import net.seesharpsoft.melon.test.TestHelper;
-import org.junit.After;
-import org.junit.Before;
+import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,22 +13,15 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XmlStorageUT {
-
-    private static final String[] TEST_FILES = new String[] {
-            "/data/Address.xml",
-            "/files/Address_New.xml",
-            "/files/Address_Test.xml"
-    };
-
-    @Before
-    public void beforeEach() throws IOException {
-        TestHelper.createBackupFiles(TEST_FILES);
-    }
-
-    @After
-    public void afterEach() throws IOException {
-        TestHelper.restoreBackupFiles(TEST_FILES);
+public class XmlStorageUT extends TestFixture {
+    
+    @Override
+    public String[] getResourceFiles() {
+        return new String[] {
+                "/data/Address.xml",
+                "/files/Address_New.xml",
+                "/files/Address_Test.xml"
+        };
     }
     
     @Test

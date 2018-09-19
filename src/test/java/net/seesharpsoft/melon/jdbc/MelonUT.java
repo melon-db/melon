@@ -1,49 +1,32 @@
 package net.seesharpsoft.melon.jdbc;
 
-import net.seesharpsoft.melon.Constants;
 import net.seesharpsoft.melon.Storage;
-import net.seesharpsoft.melon.test.TestHelper;
-import org.junit.After;
-import org.junit.Before;
+import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-public class MelonUT {
+public class MelonUT extends TestFixture {
 
-    private static final String[] TEST_FILES = new String[] {
-            "/schemas/UserOnlySchema.yaml",
-            "/data/Address.xml",
-            "/data/Team.properties",
-            "/data/User.csv"
-    };
 
-    @Before
-    public void beforeEach() throws IOException {
-        TestHelper.createBackupFiles(TEST_FILES);
-    }
 
-    @After
-    public void afterEach() throws IOException {
-        TestHelper.restoreBackupFiles(TEST_FILES);
-    }
-    
-    protected static MelonConnection getConnection(String fileName) throws SQLException {
-        Properties info = new Properties();
-        info.put(Constants.PROPERTY_CONFIG_FILE, fileName);
-        info.put("AUTOCOMMIT", "false");
-        return (MelonConnection)DriverManager.getConnection(String.format("%sh2:mem:%s", MelonDriver.MELON_URL_PREFIX, "test"), info);
+    @Override
+    public String[] getResourceFiles() {
+        return new String[] {
+                "/schemas/UserOnlySchema.yaml",
+                "/data/Address.xml",
+                "/data/Team.properties",
+                "/data/User.csv"
+        };
     }
     
     @Test
