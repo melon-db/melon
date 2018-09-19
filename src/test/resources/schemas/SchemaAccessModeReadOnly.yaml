@@ -12,4 +12,4 @@ tables:
     storage:
       location: ../data/User.csv
       properties:
-        header: false
+        csv-header: false

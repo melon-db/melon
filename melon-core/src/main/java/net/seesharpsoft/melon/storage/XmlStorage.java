@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XmlStorage extends FileStorageBase {
-    public static final String PROPERTY_ROOT = "path";
+    public static final String PROPERTY_ROOT = "xml-record-path";
 
-    public static final String PROPERTY_INDENT = "indent";
+    public static final String PROPERTY_INDENT = "xml-indent";
+    public static final int DEFAULT_INDENT = 4; // max: 32
     
-    public static final String PROPERTY_LINEBREAK = "linebreak";
+    public static final String PROPERTY_LINEBREAK = "xml-linebreak";
+    public static final String DEFAULT_LINEBREAK = "\n"; 
     
     private static final String SPACE_STRING = "                                ";
 
@@ -25,6 +27,14 @@ public class XmlStorage extends FileStorageBase {
         super(table, properties, file);
     }
 
+    protected String linebreak() {
+        return properties.getOrDefault(PROPERTY_LINEBREAK, DEFAULT_LINEBREAK);
+    }
+
+    protected int indent() {
+        return properties.getOrDefault(PROPERTY_INDENT, DEFAULT_INDENT);
+    }
+    
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
         String currentPath = "";
@@ -96,8 +106,8 @@ public class XmlStorage extends FileStorageBase {
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
         String root = properties.get(PROPERTY_ROOT);
         String[] paths = root.split("/");
-        String indent = createIndent(properties.getOrDefault(PROPERTY_INDENT, 4));
-        String linebreak = properties.getOrDefault(PROPERTY_LINEBREAK, "\n");
+        String indent = createIndent(indent());
+        String linebreak = linebreak();
         int level = 0;
         int columnSize = table.getColumns().size();
 

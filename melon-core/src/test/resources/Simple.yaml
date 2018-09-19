@@ -10,4 +10,4 @@ tables:
     storage:
       location: data/Address.xml
       properties:
-        path: /ADDRESS/DATA_RECORD
+        xml-record-path: /ADDRESS/DATA_RECORD

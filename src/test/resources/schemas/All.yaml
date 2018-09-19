@@ -25,7 +25,7 @@ tables:
     storage:
       location: ../data/TeamMembers.csv
       properties:
-        header: false
+        csv-header: false
   - name: Address
     columns:
       - name: id
@@ -36,7 +36,7 @@ tables:
     storage:
       location: ../data/Address.xml
       properties:
-        path: /ADDRESS/DATA_RECORD
+        xml-record-path: /ADDRESS/DATA_RECORD
 views:
   - name: UserWithAddresses
     query: >

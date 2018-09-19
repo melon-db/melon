@@ -9,13 +9,13 @@ tables:
     storage:
       location: data/SimpleText.html
       properties:
-        head: >
+        html-header: >
           <meta httpequiv="content-type" content="text/html" charset="utf-8">
-        columnAttributes:
+        html-column-attributes:
           type: field
           index: $index$
           name: $name$
-        recordAttributes:
+        html-record-attributes:
           type: record
           index: $column:index$
-        format: List
+        html-format: List

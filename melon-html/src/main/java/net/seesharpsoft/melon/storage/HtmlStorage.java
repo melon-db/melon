@@ -5,7 +5,6 @@ import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.ReferenceType;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.storage.FileStorageBase;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,14 +20,14 @@ import java.util.Map;
 
 public class HtmlStorage extends FileStorageBase {
 
-    public static final String PROPERTY_HEAD_CONTENT = "header";
-    public static final String PROPERTY_FORMAT = "format";
+    public static final String PROPERTY_HEAD_CONTENT = "html-header";
+    public static final String PROPERTY_FORMAT = "html-format";
     
     public static final String FORMAT_TABLE = "Table";
     public static final String FORMAT_LIST = "List";
     
-    public static final String PROPERTY_COLUMN_ATTRIBUTES = "columnAttributes";
-    public static final String PROPERTY_RECORD_ATTRIBUTES = "recordAttributes";
+    public static final String PROPERTY_COLUMN_ATTRIBUTES = "html-column-attributes";
+    public static final String PROPERTY_RECORD_ATTRIBUTES = "html-record-attributes";
 
     public HtmlStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);

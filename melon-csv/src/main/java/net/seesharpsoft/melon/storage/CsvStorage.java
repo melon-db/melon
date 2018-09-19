@@ -3,7 +3,6 @@ package net.seesharpsoft.melon.storage;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.storage.FileStorageBase;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -19,12 +18,14 @@ import java.util.stream.Collectors;
 
 public class CsvStorage extends FileStorageBase {
 
-    public static final String HAS_HEADER = "header";
-    public static boolean DEFAULT_HAS_HEADER = true;
+    public static final String HAS_HEADER = "csv-header";
+    public static final boolean DEFAULT_HAS_HEADER = true;
     
-    public static final String PROPERTY_TRIM_VALUES = "trim";
-    
-    public static boolean DEFAULT_TRIM_VALUES = true;
+    public static final String PROPERTY_TRIM_VALUES = "csv-trim";
+    public static final boolean DEFAULT_TRIM_VALUES = true;
+
+    public static final String PROPERTY_DELIMITER = "csv-delimiter";
+    public static final char DEFAULT_DELIMITER = ',';
 
     public CsvStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);
@@ -38,8 +39,13 @@ public class CsvStorage extends FileStorageBase {
         return properties.getOrDefault(PROPERTY_TRIM_VALUES, DEFAULT_TRIM_VALUES);
     }
 
+    protected char delimiter() {
+        return properties.getOrDefault(PROPERTY_DELIMITER, DEFAULT_DELIMITER);
+    }
+
     protected CSVFormat getCSVFormat(boolean writing) {
         CSVFormat format = CSVFormat.RFC4180.withTrim(trimValues())
+                .withDelimiter(delimiter())
                 .withHeader(table.getColumns().stream().map(column -> column.getName()).collect(Collectors.toList()).toArray(new String[0]))
                 .withSkipHeaderRecord(writing ? !hasHeader() : hasHeader());
         return format;

@@ -10,7 +10,7 @@ tables:
     storage:
       location: ../data/User.csv
       properties:
-        header: true
+        csv-header: true
   - name: Team
     columns:
       - name: id
@@ -27,4 +27,4 @@ tables:
     storage:
       location: ../data/TeamMembers.csv
       properties:
-        header: false
+        csv-header: false

@@ -11,13 +11,20 @@ import java.util.stream.Collectors;
 
 public class PropertiesStorage extends FileStorageBase {
 
+    public static final String PROPERTY_SEPARATOR = "properties-separator";
+    public static final String DEFAULT_SEPARATOR = "=";
+    
     public PropertiesStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);
     }
 
+    protected String separator() {
+        return properties.getOrDefault(PROPERTY_SEPARATOR, DEFAULT_SEPARATOR);
+    }
+    
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
-        Properties dataProperties = Properties.read(file);
+        Properties dataProperties = Properties.read(file, separator());
 
         return dataProperties.entrySet().stream()
                 .map(entry -> {
@@ -36,6 +43,6 @@ public class PropertiesStorage extends FileStorageBase {
         for (List<String> values : records) {
             dataProperties.put(values.get(0), values.size() > 1 ? values.get(1) : null);
         }
-        dataProperties.store(file, false);
+        dataProperties.store(file, separator(), false);
     }
 }
