@@ -16,7 +16,7 @@ allprojects {
     }
     
     group 'net.seesharpsoft.melon'
-    version = '0.3.0'
+    version = '0.4.0'
 
     repositories {
         mavenCentral()
@@ -26,13 +26,13 @@ allprojects {
 
     dependencies {
         testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompile 'com.h2database:h2:1.4.197'
         compileOnly 'org.projectlombok:lombok:1.18.2'
     }
 }
 
 dependencies {
     testCompile project(path: ':melon-core', configuration: 'testFixtures')
-    testCompile project(':melon-standalone')
     compile project(':melon-core')
     compile project(':melon-csv')
     compile project(':melon-html')

@@ -4,7 +4,7 @@ import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonadeDriver;
+import net.seesharpsoft.melon.jdbc.MelonDbDriver;
 import net.seesharpsoft.melon.test.TestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,7 @@ public class HtmlStorageUT {
     @Before
     public void beforeEach() throws IOException {
         TestHelper.createBackupFiles(TEST_FILES);
-        MelonadeDriver.load();
+        MelonDbDriver.load();
     }
 
     @After
@@ -42,7 +42,7 @@ public class HtmlStorageUT {
     
     @Test
     public void should_parse_fieldInfo_correctly() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDbDriver.MELON_DB_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
@@ -57,7 +57,7 @@ public class HtmlStorageUT {
 
     @Test
     public void should_parse_html() throws SQLException, IOException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDbDriver.MELON_DB_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
@@ -74,7 +74,7 @@ public class HtmlStorageUT {
 
     @Test
     public void should_write_html() throws SQLException, IOException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = DriverManager.getConnection(String.format("%s/Simple.yaml", MelonDbDriver.MELON_DB_URL_PREFIX))) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;

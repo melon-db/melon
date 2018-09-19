@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     testCompile project(path: ':melon-core', configuration: 'testFixtures')
-    testCompile project(':melon-standalone')
     compile 'org.jsoup:jsoup:1.11.3'
     compile project(':melon-core')
 }

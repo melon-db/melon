@@ -3,7 +3,6 @@ package net.seesharpsoft.melon;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.config.SchemaConfig;
-import net.seesharpsoft.melon.jdbc.MelonConnection;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -34,11 +33,16 @@ public class MelonFactory {
         return yaml.loadAs(stream, SchemaConfig.class);
     }
 
+    public static final String getConfigFilePath(java.util.Properties properties) {
+        Object configFile = properties.get(Constants.PROPERTY_CONFIG_FILE);
+        return configFile == null ? null : configFile.toString();
+    }
+
     public Melon getOrCreateMelon(String url, java.util.Properties properties) throws IOException {
         Melon melon = CREATED_INFOS.get(url);
 
         if (melon == null) {
-            String configFile = MelonConnection.getConfigFilePath(url, properties);
+            String configFile = getConfigFilePath(properties);
             File file = MelonHelper.getFile(configFile, null);
             SchemaConfig schemaConfig = null;
             try (InputStream resourceStream = SharpIO.createInputStream(configFile, true)) {

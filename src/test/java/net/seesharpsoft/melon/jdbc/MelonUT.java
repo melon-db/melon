@@ -1,5 +1,6 @@
 package net.seesharpsoft.melon.jdbc;
 
+import net.seesharpsoft.melon.Constants;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.test.TestHelper;
 import org.junit.After;
@@ -38,9 +39,16 @@ public class MelonUT {
         TestHelper.restoreBackupFiles(TEST_FILES);
     }
     
+    protected static MelonConnection getConnection(String fileName) throws SQLException {
+        Properties info = new Properties();
+        info.put(Constants.PROPERTY_CONFIG_FILE, fileName);
+        info.put("AUTOCOMMIT", "false");
+        return (MelonConnection)DriverManager.getConnection(String.format("%sh2:mem:%s", MelonDriver.MELON_URL_PREFIX, "test"), info);
+    }
+    
     @Test
     public void should_create_correct_config_object_from_yaml_and_initialise_schema() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
@@ -50,7 +58,7 @@ public class MelonUT {
 
     @Test
     public void should_create_correct_config_object_from_yaml_and_have_data_loaded() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
             
             ResultSet rs = connection.prepareStatement("SELECT * FROM User ORDER BY ID").executeQuery();
@@ -71,7 +79,7 @@ public class MelonUT {
 
     @Test
     public void should_not_persist_changes_in_source_file_if_not_committed() throws SQLException, IOException {
-        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
@@ -83,7 +91,7 @@ public class MelonUT {
 
     @Test
     public void should_not_persist_changes_in_source_file_on_rollback() throws SQLException, IOException {
-        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
             connection.rollback();
@@ -98,7 +106,7 @@ public class MelonUT {
     // TODO cleanup
     @Test
     public void should_persist_changes_in_source_file_on_commit() throws SQLException, IOException {
-        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
             connection.commit();
@@ -112,7 +120,7 @@ public class MelonUT {
 
     @Test
     public void should_not_persist_changes_in_source_if_accessMode_is_readOnly() throws SQLException, IOException {
-        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/SchemaAccessModeReadOnly.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (MelonConnection connection = getConnection("/schemas/SchemaAccessModeReadOnly.yaml")) {
 
             connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
             connection.commit();
@@ -126,7 +134,7 @@ public class MelonUT {
 
     @Test
     public void should_persist_new_rows_on_commit() throws SQLException, IOException {
-        try (MelonConnection connection = (MelonConnection) DriverManager.getConnection(String.format("%s/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
             connection.prepareStatement("INSERT INTO User (id, firstName, lastName) VALUES ('3', 'Tobi', 'Tester')").execute();
             connection.commit();
@@ -142,7 +150,7 @@ public class MelonUT {
     @Ignore
     @Test
     public void should_create_correct_config_object_from_absolute_file_path() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%sD:/melon/melon-core/src/test/resources/schemas/UserOnlySchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = getConnection("D:/melon/melon-core/src/test/resources/schemas/UserOnlySchema.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
@@ -152,7 +160,7 @@ public class MelonUT {
 
     @Test
     public void should_create_connection_and_missing_storage_file() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/UserAndTeamSchema.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = getConnection("/schemas/UserAndTeamSchema.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
 
             MelonConnection melonConnection = (MelonConnection) connection;
@@ -162,7 +170,7 @@ public class MelonUT {
 
     @Test
     public void should_create_connection() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(String.format("%s/schemas/All.yaml", MelonadeDriver.MELON_STANDALONE_URL_PREFIX))) {
+        try (Connection connection = getConnection("/schemas/All.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
         }
     }

@@ -2,49 +2,21 @@ package net.seesharpsoft.melon.jdbc;
 
 import lombok.Getter;
 import net.seesharpsoft.commons.jdbc.ConnectionWrapper;
-import net.seesharpsoft.melon.Constants;
 import net.seesharpsoft.melon.Melon;
 import net.seesharpsoft.melon.MelonFactory;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.Properties;
 
 public class MelonConnection extends ConnectionWrapper {
-
-    public static final String getConfigFilePath(String connectionUrl, Properties properties) {
-        return properties.getOrDefault(Constants.PROPERTY_CONFIG_FILE, Constants.DEFAULT_CONFIG_FILE).toString();
-    }
-
-    public static final String getDelegateConnectionUrl(String connectionUrl, Properties properties) {
-        return connectionUrl.replaceFirst("\\:melon\\:", ":");
-    }
-
-    public static final Properties getDelegateConnectionProperties(String connectionUrl, Properties properties) {
-        Properties resultProperties = new Properties();
-        if (properties != null) {
-            resultProperties.putAll(properties);
-        }
-        String driverClass = resultProperties.getProperty("driver");
-        if (driverClass != null) {
-            try {
-                Class.forName(driverClass);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        resultProperties.remove(Constants.PROPERTY_CONFIG_FILE);
-        resultProperties.remove("driver");
-        return resultProperties;
-    }
-
+    
     @Getter
     protected Melon melon;
 
-    public MelonConnection(String url, Properties properties) throws SQLException, IOException {
-        super(DriverManager.getConnection(getDelegateConnectionUrl(url, properties), getDelegateConnectionProperties(url, properties)));
+    public MelonConnection(Connection connection, Melon melon) throws SQLException, IOException {
+        super(connection);
 
-        melon = MelonFactory.INSTANCE.getOrCreateMelon(url, properties);
+        this.melon = melon;
         melon.syncToDatabase(this);
     }
 

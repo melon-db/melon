@@ -94,13 +94,13 @@ public class SqlHelper {
                 primaryColumns.add(column.getName());
             }
             builder.append(sanitizeDbName(column.getName()));
-            if (primaryColumns.contains(column.getName())) {
-                builder.append(" VARCHAR(")
-                        .append(column.getProperties().getOrDefault("size", 2000))
+            builder.append(" VARCHAR");
+            if (primaryColumns.contains(column.getName()) || column.getProperties().containsKey("size")) {
+                builder.append("(")
+                        .append(column.getProperties().getOrDefault("size", 1024))
                         .append(")");
-            } else {
-                builder.append(" VARCHAR");
             }
+
             if (++i < columnLength) {
                 builder.append(",");
             }
@@ -117,7 +117,7 @@ public class SqlHelper {
     }
 
     public static String generateCreateViewStatement(View view) {
-        StringBuilder builder = new StringBuilder("CREATE VIEW IF NOT EXISTS ")
+        StringBuilder builder = new StringBuilder("CREATE OR REPLACE VIEW ")
                 .append(sanitizeDbName(view.getName()))
                 .append(" AS ")
                 .append(view.getQuery());
