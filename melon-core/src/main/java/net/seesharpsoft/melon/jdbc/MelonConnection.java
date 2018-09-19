@@ -21,9 +21,11 @@ public class MelonConnection extends ConnectionWrapper {
     }
 
     public static final Properties getDelegateConnectionProperties(String connectionUrl, Properties properties) {
-        Properties finalProperties = new Properties(properties);
-        finalProperties.put("AUTOCOMMIT", "false");
-        String driverClass = finalProperties.getProperty("driver");
+        Properties resultProperties = new Properties();
+        if (properties != null) {
+            resultProperties.putAll(properties);
+        }
+        String driverClass = resultProperties.getProperty("driver");
         if (driverClass != null) {
             try {
                 Class.forName(driverClass);
@@ -31,7 +33,9 @@ public class MelonConnection extends ConnectionWrapper {
                 e.printStackTrace();
             }
         }
-        return finalProperties;
+        resultProperties.remove(Constants.PROPERTY_CONFIG_FILE);
+        resultProperties.remove("driver");
+        return resultProperties;
     }
 
     @Getter

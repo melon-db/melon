@@ -35,9 +35,13 @@ public class MelonadeConnection extends MelonConnection {
 
     private static Properties getMelonadeProperties(String url, Properties properties) {
         String configFile = getStandaloneConfigFilePath(url, properties);
-        Properties finalProperties = new Properties(properties);
-        finalProperties.put(net.seesharpsoft.melon.Constants.PROPERTY_CONFIG_FILE, configFile);
-        return finalProperties;
+        Properties resultProperties = new Properties();
+        if (properties != null) {
+            resultProperties.putAll(properties);
+        }
+        resultProperties.put(net.seesharpsoft.melon.Constants.PROPERTY_CONFIG_FILE, configFile);
+        resultProperties.put("AUTOCOMMIT", "false");
+        return resultProperties;
     }
     
     public MelonadeConnection(String url, Properties properties) throws SQLException, IOException {

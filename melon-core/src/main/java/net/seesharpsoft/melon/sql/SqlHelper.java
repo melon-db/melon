@@ -12,15 +12,19 @@ import java.util.List;
 
 public class SqlHelper {
 
+    private static String sanitizeDbName(String name) {
+        return name.replaceAll("\\W", "_");
+    }
+
     public static String generateInsertStatement(Table table) {
         StringBuilder builder = new StringBuilder("INSERT INTO ")
-                .append(table.getName())
+                .append(sanitizeDbName(table.getName()))
                 .append(" (");
 
         int columnLength = table.getColumns().size();
         for (int i = 0; i < columnLength; ) {
             Column column = table.getColumns().get(i);
-            builder.append(column.getName());
+            builder.append(sanitizeDbName(column.getName()));
             if (++i == columnLength) {
                 builder.append(")");
             } else {
@@ -47,7 +51,7 @@ public class SqlHelper {
         int columnLength = table.getColumns().size();
         for (int i = 0; i < columnLength; ) {
             Column column = table.getColumns().get(i);
-            builder.append(column.getName());
+            builder.append(sanitizeDbName(column.getName()));
             if (++i == columnLength) {
                 builder.append("");
             } else {
@@ -55,17 +59,21 @@ public class SqlHelper {
             }
         }
 
-        builder.append(" FROM ").append(table.getName());
+        builder.append(" FROM ").append(sanitizeDbName(table.getName()));
 
         return builder.toString();
     }
 
-    public static String separateValuesBySeparator(List<String> values, String separator) {
+    public static String separateValuesBySeparator(List<String> values, String separator, boolean sanitize) {
         int valuesSize = values.size();
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < valuesSize; ) {
             String value = values.get(i);
-            builder.append(value);
+            if (sanitize) {
+                builder.append(sanitizeDbName(value));
+            } else {
+                builder.append(value);
+            }
             if (++i < valuesSize) {
                 builder.append(",");
             }
@@ -75,7 +83,7 @@ public class SqlHelper {
 
     public static String generateCreateTableStatement(Table table) {
         StringBuilder builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-                .append(table.getName())
+                .append(sanitizeDbName(table.getName()))
                 .append(" (");
 
         List<String> primaryColumns = new ArrayList<>();
@@ -85,13 +93,13 @@ public class SqlHelper {
             if (column.isPrimary()) {
                 primaryColumns.add(column.getName());
             }
-            builder.append(column.getName());
+            builder.append(sanitizeDbName(column.getName()));
             if (primaryColumns.contains(column.getName())) {
                 builder.append(" VARCHAR(")
                         .append(column.getProperties().getOrDefault("size", 2000))
                         .append(")");
             } else {
-                builder.append(" TEXT");
+                builder.append(" VARCHAR");
             }
             if (++i < columnLength) {
                 builder.append(",");
@@ -100,7 +108,7 @@ public class SqlHelper {
         if (!primaryColumns.isEmpty()) {
             builder.append(",")
                     .append("PRIMARY KEY (")
-                    .append(separateValuesBySeparator(primaryColumns, ","))
+                    .append(separateValuesBySeparator(primaryColumns, ",", true))
                     .append(")");
         }
         builder.append(")");
@@ -110,7 +118,7 @@ public class SqlHelper {
 
     public static String generateCreateViewStatement(View view) {
         StringBuilder builder = new StringBuilder("CREATE VIEW IF NOT EXISTS ")
-                .append(view.getName())
+                .append(sanitizeDbName(view.getName()))
                 .append(" AS ")
                 .append(view.getQuery());
 
@@ -119,7 +127,7 @@ public class SqlHelper {
 
     public static String generateClearTableStatement(Table table) {
         StringBuilder builder = new StringBuilder("TRUNCATE TABLE ")
-                .append(table.getName());
+                .append(sanitizeDbName(table.getName()));
 
         return builder.toString();
     }

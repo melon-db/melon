@@ -30,17 +30,8 @@ public class HtmlStorage extends FileStorageBase {
     public static final String PROPERTY_COLUMN_ATTRIBUTES = "columnAttributes";
     public static final String PROPERTY_RECORD_ATTRIBUTES = "recordAttributes";
 
-    public static final String PROPERTY_PRIMARY_TARGET = "primary";
-
-    public static final String PRIMARY_TARGET_ATTRIBUTE = "Attribute";
-    public static final String PRIMARY_TARGET_ELEMENT = "Element";
-    
     public HtmlStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);
-    }
-
-    protected boolean primaryAsAttributes() {
-        return getProperties().getOrDefault(PROPERTY_PRIMARY_TARGET, PRIMARY_TARGET_ELEMENT).equalsIgnoreCase(PRIMARY_TARGET_ATTRIBUTE);
     }
 
     protected String getFormat() {
