@@ -14,6 +14,11 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.4.0
+
+- separate wrapper and standalone driver but re-use connection class
+- rename melon-standalone to melon-db
+
 ### v0.3.0
 
 - project structure rework *again*
