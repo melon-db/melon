@@ -20,8 +20,10 @@ tables:
     columns:
       - name: teamId
         primary: true
+        reference: Team
       - name: userId
         primary: true
+        reference: User
     storage:
       location: ../data/TeamMembers.csv
       properties:
@@ -33,6 +35,7 @@ tables:
       - name: city
       - name: country
       - name: userId
+        reference: User
     storage:
       location: ../data/Address.xml
       properties:

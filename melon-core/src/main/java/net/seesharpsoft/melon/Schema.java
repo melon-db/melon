@@ -2,14 +2,12 @@ package net.seesharpsoft.melon;
 
 import net.seesharpsoft.commons.collection.PropertiesOwner;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
-public interface Schema extends PropertiesOwner {
+public interface Schema extends PropertiesOwner, NamedEntity {
     
-    String getName();
-    
-    Set<Table> getTables();
+    List<Table> getTables();
 
     default Table getTable(String name) {
         Objects.requireNonNull(name, "name must not be null!");
@@ -21,7 +19,7 @@ public interface Schema extends PropertiesOwner {
         return null;
     }
 
-    Set<View> getViews();
+    List<View> getViews();
 
     default View getView(String name) {
         Objects.requireNonNull(name, "name must not be null!");

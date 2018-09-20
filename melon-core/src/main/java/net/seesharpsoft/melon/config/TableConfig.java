@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon.config;
 
 import net.seesharpsoft.commons.collection.Properties;
+import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.Table;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
@@ -15,10 +16,10 @@ public class TableConfig extends ConfigBase {
     
     public List<ColumnConfig> columns;
     
-    public Table getTable(Properties additionalProperties) {
+    public Table getTable(Schema schema, Properties additionalProperties) {
         Properties finalProperties = getProperties(additionalProperties);
         
-        TableImpl table = new TableImpl(this.name, finalProperties);
+        TableImpl table = new TableImpl(schema, this.name, finalProperties);
         
         table.setStorage(storage.getStorage(table, finalProperties));
         if (columns != null) {

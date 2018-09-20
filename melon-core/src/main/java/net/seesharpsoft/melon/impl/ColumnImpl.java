@@ -21,6 +21,10 @@ public class ColumnImpl implements Column {
     @Setter
     protected boolean primary = false;
     
+    @Setter
+    @Getter
+    protected Table reference;
+    
     public ColumnImpl(Table table, String name, Properties properties) {
         this.table = table;
         this.name = name;

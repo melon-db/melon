@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
+import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
 
@@ -20,12 +21,16 @@ public class TableImpl implements Table {
     
     @Getter
     protected final String name;
+
+    @Getter
+    protected final Schema schema;
     
     @Setter
     @Getter
     protected Storage storage;
     
-    public TableImpl(String name, Properties properties) {
+    public TableImpl(Schema schema, String name, Properties properties) {
+        this.schema = schema;
         this.name = name;
         this.properties = new Properties(properties);
         this.columns = new ArrayList<>();

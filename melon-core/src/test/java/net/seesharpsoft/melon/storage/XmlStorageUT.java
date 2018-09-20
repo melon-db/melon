@@ -2,7 +2,9 @@ package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.MelonHelper;
+import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.impl.ColumnImpl;
+import net.seesharpsoft.melon.impl.SchemaImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
@@ -26,7 +28,8 @@ public class XmlStorageUT extends TestFixture {
     
     @Test
     public void should_parse_address_xml() throws IOException {
-        TableImpl table = new TableImpl("Address", new Properties());
+        Schema schema = new SchemaImpl("dummy", new Properties());
+        TableImpl table = new TableImpl(schema, "Address", new Properties());
         ColumnImpl column = new ColumnImpl(table, "id", new Properties());
         table.addColumn(column);
         column = new ColumnImpl(table, "city", new Properties());
@@ -44,7 +47,8 @@ public class XmlStorageUT extends TestFixture {
 
     @Test
     public void should_write_address_xml() throws IOException {
-        TableImpl table = new TableImpl("Address", new Properties());
+        Schema schema = new SchemaImpl("dummy", new Properties());
+        TableImpl table = new TableImpl(schema, "Address", new Properties());
         ColumnImpl column = new ColumnImpl(table, "id", new Properties());
         table.addColumn(column);
         column = new ColumnImpl(table, "city", new Properties());
@@ -66,7 +70,8 @@ public class XmlStorageUT extends TestFixture {
 
     @Test
     public void should_repeatedly_read_and_write_address_xml_properly() throws IOException {
-        TableImpl table = new TableImpl("Address", new Properties());
+        Schema schema = new SchemaImpl("dummy", new Properties());
+        TableImpl table = new TableImpl(schema, "Address", new Properties());
         ColumnImpl column = new ColumnImpl(table, "id", new Properties());
         table.addColumn(column);
         column = new ColumnImpl(table, "city", new Properties());

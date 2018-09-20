@@ -5,10 +5,14 @@ import net.seesharpsoft.commons.collection.PropertiesOwner;
 import java.util.List;
 import java.util.Objects;
 
-public interface Table extends PropertiesOwner {
+public interface Table extends PropertiesOwner, NamedEntity {
 
-    String getName();
-
+    /**
+     * Returns the schema this table belongs to.
+     * @return the schema this table belongs to
+     */
+    Schema getSchema();
+    
     List<Column> getColumns();
 
     default Column getColumn(String name) {

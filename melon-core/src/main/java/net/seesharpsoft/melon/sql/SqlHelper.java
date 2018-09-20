@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon.sql;
 
 import net.seesharpsoft.melon.Column;
+import net.seesharpsoft.melon.NamedEntity;
 import net.seesharpsoft.melon.Table;
 import net.seesharpsoft.melon.View;
 
@@ -9,6 +10,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SqlHelper {
 
@@ -64,7 +66,11 @@ public class SqlHelper {
         return builder.toString();
     }
 
-    public static String separateValuesBySeparator(List<String> values, String separator, boolean sanitize) {
+    public static String separateEntitiesBySeparator(List<? extends NamedEntity> values, String separator, boolean sanitize) {
+        return SqlHelper.separateNameBySeparator(values.stream().map(namedEntity -> namedEntity.getName()).collect(Collectors.toList()), separator, sanitize);
+    }
+    
+    public static String separateNameBySeparator(List<String> values, String separator, boolean sanitize) {
         int valuesSize = values.size();
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < valuesSize; ) {
@@ -86,16 +92,20 @@ public class SqlHelper {
                 .append(sanitizeDbName(table.getName()))
                 .append(" (");
 
-        List<String> primaryColumns = new ArrayList<>();
+        List<Column> primaryColumns = new ArrayList<>();
+        List<Column> referencingColumns = new ArrayList<>();
         int columnLength = table.getColumns().size();
         for (int i = 0; i < columnLength; ) {
             Column column = table.getColumns().get(i);
             if (column.isPrimary()) {
-                primaryColumns.add(column.getName());
+                primaryColumns.add(column);
+            }
+            if (column.getReference() != null) {
+                referencingColumns.add(column);
             }
             builder.append(sanitizeDbName(column.getName()));
             builder.append(" VARCHAR");
-            if (primaryColumns.contains(column.getName()) || column.getProperties().containsKey(Column.PROPERTY_LENGTH)) {
+            if (column.getProperties().containsKey(Column.PROPERTY_LENGTH)) {
                 builder.append("(")
                         .append(column.getProperties().getOrDefault(Column.PROPERTY_LENGTH, Column.DEFAULT_LENGTH))
                         .append(")");
@@ -108,9 +118,23 @@ public class SqlHelper {
         if (!primaryColumns.isEmpty()) {
             builder.append(",")
                     .append("PRIMARY KEY (")
-                    .append(separateValuesBySeparator(primaryColumns, ",", true))
+                    .append(separateEntitiesBySeparator(primaryColumns, ",", true))
                     .append(")");
         }
+        for (Column referencingColumn : referencingColumns) {
+            builder.append(",")
+                    .append("FOREIGN KEY (")
+                    .append(sanitizeDbName(referencingColumn.getName()))
+                    .append(") REFERENCES ")
+                    .append(sanitizeDbName(referencingColumn.getReference().getName()))
+                    .append("(")
+                    .append(SqlHelper.separateNameBySeparator(referencingColumn.getReference().getColumns().stream()
+                            .filter(column -> column.isPrimary())
+                            .map(column -> column.getName())
+                            .collect(Collectors.toList()), ",", true))
+                    .append(") ON DELETE CASCADE");
+        }
+
         builder.append(")");
 
         return builder.toString();
@@ -126,7 +150,7 @@ public class SqlHelper {
     }
 
     public static String generateClearTableStatement(Table table) {
-        StringBuilder builder = new StringBuilder("TRUNCATE TABLE ")
+        StringBuilder builder = new StringBuilder("DELETE FROM ")
                 .append(sanitizeDbName(table.getName()));
 
         return builder.toString();

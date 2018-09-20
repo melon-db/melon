@@ -6,18 +6,16 @@ import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.Table;
 import net.seesharpsoft.melon.View;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class SchemaImpl implements Schema {
     
     @Getter
     protected final Properties properties;
     
-    protected final Set<Table> tables;
+    protected final List<Table> tables;
 
-    protected final Set<View> views;
+    protected final List<View> views;
     
     @Getter
     private final String name;
@@ -25,13 +23,13 @@ public class SchemaImpl implements Schema {
     public SchemaImpl(String name, Properties properties) {
         this.name = name;
         this.properties = new Properties(properties);
-        this.tables = new HashSet<>();
-        this.views = new HashSet<>();
+        this.tables = new ArrayList<>();
+        this.views = new ArrayList<>();
     }
 
     @Override
-    public Set<Table> getTables() {
-        return Collections.unmodifiableSet(tables);
+    public List<Table> getTables() {
+        return Collections.unmodifiableList(tables);
     }
 
     public void addTable(Table table) {
@@ -39,8 +37,8 @@ public class SchemaImpl implements Schema {
     }
     
     @Override
-    public Set<View> getViews() {
-        return Collections.unmodifiableSet(views);
+    public List<View> getViews() {
+        return Collections.unmodifiableList(views);
     }
 
     public void addView(View view) {
