@@ -14,6 +14,11 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.5.0
+
+- Column entity got a reference fields
+- foreign key definition and creation
+
 ### v0.4.0
 
 - separate wrapper and standalone driver but re-use connection class
