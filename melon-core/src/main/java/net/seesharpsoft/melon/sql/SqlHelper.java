@@ -95,9 +95,9 @@ public class SqlHelper {
             }
             builder.append(sanitizeDbName(column.getName()));
             builder.append(" VARCHAR");
-            if (primaryColumns.contains(column.getName()) || column.getProperties().containsKey("size")) {
+            if (primaryColumns.contains(column.getName()) || column.getProperties().containsKey(Column.PROPERTY_LENGTH)) {
                 builder.append("(")
-                        .append(column.getProperties().getOrDefault("size", 1024))
+                        .append(column.getProperties().getOrDefault(Column.PROPERTY_LENGTH, Column.DEFAULT_LENGTH))
                         .append(")");
             }
 
