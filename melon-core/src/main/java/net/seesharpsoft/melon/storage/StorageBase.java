@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class StorageBase implements Storage {
-    
+
     @Getter
     protected final Properties properties;
-    
+
     protected final Table table;
 
     @Setter
     @Getter
     private long lastSynced;
-    
+
     public StorageBase(Table table, Properties properties) {
         Objects.requireNonNull(table, "table must not be null!");
         Objects.requireNonNull(properties, "properties must not be null!");
@@ -29,7 +29,7 @@ public abstract class StorageBase implements Storage {
         this.properties = properties;
         this.lastSynced = 0;
     }
-    
+
     @Override
     public List<List<String>> read() throws IOException {
         List<List<String>> result = read(this.table, this.properties);
@@ -39,7 +39,7 @@ public abstract class StorageBase implements Storage {
 
     @Override
     public void write(List<List<String>> records) throws IOException {
-        if (getProperties().getOrDefault(PROPERTY_ACCESS_MODE, ACCESS_MODE_DEFAULT).equals(ACCESS_MODE_READONLY)) {
+        if (getProperties().getOrDefault(PROPERTY_STORAGE_MODE, STORAGE_MODE_DEFAULT).equals(STORAGE_MODE_READONLY)) {
             return;
         }
         write(this.table, this.properties, records);
@@ -58,7 +58,7 @@ public abstract class StorageBase implements Storage {
     protected long getSyncTime() {
         return Instant.now().toEpochMilli();
     }
-    
+
     protected abstract List<List<String>> read(Table table, Properties properties) throws IOException;
 
     protected abstract void write(Table table, Properties properties, List<List<String>> records) throws IOException;

@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface Storage extends PropertiesOwner {
 
-    String PROPERTY_ACCESS_MODE = "storage-accessMode";
+    String PROPERTY_STORAGE_MODE = "mode";
 
-    String ACCESS_MODE_DEFAULT = "Default";
-    String ACCESS_MODE_READONLY = "ReadOnly";
+    String STORAGE_MODE_DEFAULT = "Default";
+    String STORAGE_MODE_READONLY = "ReadOnly";
 
     List<List<String>> read() throws IOException;
 

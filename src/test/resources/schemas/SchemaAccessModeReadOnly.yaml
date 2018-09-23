@@ -1,6 +1,6 @@
 name: dummy
 properties:
-  storage-accessMode: ReadOnly
+  storage-mode: ReadOnly
 tables:
   - name: User
     columns:
