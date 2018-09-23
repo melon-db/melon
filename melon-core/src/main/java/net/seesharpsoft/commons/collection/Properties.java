@@ -4,12 +4,15 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Hierarchical properties that are by default case-insensitive.
+ */
 public class Properties implements Map {
-    
+
     public static final String DEFAULT_KEY_VALUE_SEPARATOR = "=";
 
     public static final String COMMENT_LINE_BEGINNING = "#";
-    
+
     public static Properties read(File file, String keyValueSeparator) throws IOException {
         if(!file.exists()) {
             return null;
@@ -32,20 +35,24 @@ public class Properties implements Map {
     public static Properties read(File file) throws IOException {
         return read(file, DEFAULT_KEY_VALUE_SEPARATOR);
     }
-    
+
     private final Map properties;
-
     private final Properties parentProperties;
-    
-    public Properties(Properties parentProperties) {
+
+    public Properties(Properties parentProperties, boolean caseSensitive) {
         this.parentProperties = parentProperties;
-        this.properties = new HashMap<>();
+        this.properties = new TreeMap(caseSensitive ? Comparator.naturalOrder() : String.CASE_INSENSITIVE_ORDER);
+    }
+    public Properties(Properties parentProperties) {
+        this(parentProperties, false);
+    }
+    public Properties(boolean caseSensitive) {
+        this(null, caseSensitive);
+    }
+    public Properties() {
+        this(null, false);
     }
 
-    public Properties() {
-        this(null);
-    }
-    
     protected String getKey(Object key) {
         if (key == null) {
             return null;
@@ -55,7 +62,7 @@ public class Properties implements Map {
         }
         return (String)key;
     }
-    
+
     public <T> T put(String key, Object value) {
         return (T)properties.put(key, value);
     }
@@ -69,10 +76,10 @@ public class Properties implements Map {
         }
         return (T)value;
     }
-    
+
     public <T> T getOrDefault(String key, T fallback) {
         return (T)getOrDefault((Object)key, fallback);
-    } 
+    }
 
     public <T> T remove(String key) {
         return (T)properties.remove(key);
@@ -143,7 +150,7 @@ public class Properties implements Map {
         }
         return result;
     }
-    
+
     public void store(File file, String keyValueSeparator, boolean deep) throws IOException {
         if(!file.exists()) {
             if (!file.createNewFile()) {
@@ -168,7 +175,7 @@ public class Properties implements Map {
     public void store(File file, String keyValueSeparator) throws IOException {
         store(file, keyValueSeparator, true);
     }
-    
+
     public void store(File file, boolean deep) throws IOException {
         store(file, DEFAULT_KEY_VALUE_SEPARATOR, deep);
     }
@@ -176,7 +183,7 @@ public class Properties implements Map {
     public void store(File file) throws IOException {
         store(file, DEFAULT_KEY_VALUE_SEPARATOR);
     }
-    
+
     public java.util.Properties legacy() {
         java.util.Properties juProperties = new java.util.Properties();
         if (this.parentProperties != null) {

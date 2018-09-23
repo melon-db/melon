@@ -7,7 +7,7 @@ tables:
       - name: Title
       - name: Text
     storage:
-      location: data/SimpleText.html
+      path: data/SimpleText.html
       properties:
         html-header: >
           <meta httpequiv="content-type" content="text/html" charset="utf-8">

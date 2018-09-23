@@ -7,13 +7,13 @@ import java.io.File;
 import java.io.IOException;
 
 public class StorageConfig extends ConfigBase {
-    public String location;
-    
+    public String path;
+
     public Storage getStorage(Table table, Properties additionalProperties) {
         Properties finalProperties = getProperties(additionalProperties);
         try {
-            if (location != null && !location.isEmpty()) {
-                File targetFile = MelonHelper.getFile(location, ((File) additionalProperties.get(Constants.PROPERTY_CONFIG_FILE)).getParentFile().getAbsolutePath());
+            if (path != null && !path.isEmpty()) {
+                File targetFile = MelonHelper.getFile(path, ((File) additionalProperties.get(Constants.PROPERTY_CONFIG_FILE)).getParentFile().getAbsolutePath());
 
                 return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, targetFile);
             }

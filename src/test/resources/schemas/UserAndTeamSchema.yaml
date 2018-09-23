@@ -8,7 +8,7 @@ tables:
       - name: lastName
       - name: additional
     storage:
-      location: ../data/User.csv
+      path: ../data/User.csv
       properties:
         csv-header: true
   - name: Team
@@ -17,7 +17,7 @@ tables:
         primary: true
       - name: name
     storage:
-      location: ../data/Team.properties
+      path: ../data/Team.properties
   - name: TeamMembers
     columns:
       - name: teamId
@@ -25,6 +25,6 @@ tables:
       - name: userId
         primary: true
     storage:
-      location: ../data/TeamMembers.csv
+      path: ../data/TeamMembers.csv
       properties:
         csv-header: false

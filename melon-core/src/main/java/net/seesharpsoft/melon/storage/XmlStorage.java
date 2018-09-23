@@ -17,10 +17,15 @@ public class XmlStorage extends FileStorageBase {
 
     public static final String PROPERTY_INDENT = "xml-indent";
     public static final int DEFAULT_INDENT = 4; // max: 32
-    
+
     public static final String PROPERTY_LINEBREAK = "xml-linebreak";
-    public static final String DEFAULT_LINEBREAK = "\n"; 
-    
+    public static final String DEFAULT_LINEBREAK = "\n";
+
+    public static final String PROPERTY_FORMAT = "xml-format";
+    public static final String FORMAT_ELEMENTS = "Elements";
+    public static final String FORMAT_ATTRIBUTES = "Attributes";
+    public static final String DEFAULT_FORMAT = FORMAT_ELEMENTS;
+
     private static final String SPACE_STRING = "                                ";
 
     public XmlStorage(Table table, Properties properties, File file) throws IOException {
@@ -34,13 +39,22 @@ public class XmlStorage extends FileStorageBase {
     protected int indent() {
         return properties.getOrDefault(PROPERTY_INDENT, DEFAULT_INDENT);
     }
-    
+
+    protected boolean valuesAsElements() {
+        return properties.getOrDefault(PROPERTY_FORMAT, DEFAULT_FORMAT).equals(FORMAT_ELEMENTS);
+    }
+
+    protected boolean valuesAsAttributes() {
+        return properties.getOrDefault(PROPERTY_FORMAT, DEFAULT_FORMAT).equals(FORMAT_ATTRIBUTES);
+    }
+
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
         String currentPath = "";
         String rootPath = properties.get(PROPERTY_ROOT);
         boolean readValue = false;
 
+        List<Column> columns = table.getColumns();
         List<List<String>> result = new ArrayList<>();
         List<String> currentValues = null;
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -73,10 +87,18 @@ public class XmlStorage extends FileStorageBase {
                 boolean isInRootPath = rootPath.equalsIgnoreCase(currentPath);
 
                 if (reader.isStartElement() && wasInRootPath) {
-                    readValue = true;
+                    if (valuesAsElements()) {
+                        readValue = true;
+                    }
                 }
                 if (reader.isStartElement() && !wasInRootPath && isInRootPath) {
                     currentValues = new ArrayList<>();
+                    if (valuesAsAttributes()) {
+                        int maxAttributes = reader.getAttributeCount();
+                        for (int i = 0; i < columns.size(); ++i) {
+                            currentValues.add(maxAttributes <= i ? "" : reader.getAttributeValue(i));
+                        }
+                    }
                 }
                 if (reader.isEndElement() && wasInRootPath && !isInRootPath) {
                     result.add(currentValues);
@@ -95,13 +117,13 @@ public class XmlStorage extends FileStorageBase {
             writer.writeCharacters(indent);
         }
     }
-    
+
     private static String createIndent(int length) {
         StringBuilder builder = new StringBuilder(SPACE_STRING);
         builder.setLength(Math.min(SPACE_STRING.length(), length));
         return builder.toString();
     }
-    
+
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
         String root = properties.get(PROPERTY_ROOT);
@@ -127,19 +149,26 @@ public class XmlStorage extends FileStorageBase {
 
             for (List<String> values : records) {
                 writer.writeStartElement(paths[paths.length - 1]);
-                ++level;
-                linebreakAndIndent(writer, indent, level, linebreak);
-                
+                if (valuesAsElements()) {
+                    ++level;
+                    linebreakAndIndent(writer, indent, level, linebreak);
+                }
+
                 for (int i = 0; i < columnSize; ++i) {
                     Column column = table.getColumns().get(i);
 
-                    writer.writeStartElement(column.getName());
-                    writer.writeCharacters(values.size() <= i ? "" : values.get(i));
-                    writer.writeEndElement();
-                    if (i == columnSize - 1) {
-                        --level;
+                    if (valuesAsElements()) {
+                        writer.writeStartElement(column.getName());
+                        writer.writeCharacters(values.size() <= i ? "" : values.get(i));
+                        writer.writeEndElement();
+                        if (i == columnSize - 1) {
+                            --level;
+                        }
+                        linebreakAndIndent(writer, indent, level, linebreak);
                     }
-                    linebreakAndIndent(writer, indent, level, linebreak);
+                    if (valuesAsAttributes()) {
+                        writer.writeAttribute(column.getName(), values.size() <= i ? "" : values.get(i));
+                    }
                 }
                 writer.writeEndElement();
                 if (records.indexOf(values) == records.size() - 1) {
@@ -160,7 +189,7 @@ public class XmlStorage extends FileStorageBase {
 
             writer.flush();
             writer.close();
-            
+
             fos.flush();
         } catch (XMLStreamException e) {
             e.printStackTrace();

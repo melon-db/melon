@@ -1,6 +1,6 @@
 name: dummy
 properties:
-  accessMode: ReadOnly
+  storage-accessMode: ReadOnly
 tables:
   - name: User
     columns:
@@ -10,6 +10,6 @@ tables:
       - name: lastName
       - name: additional
     storage:
-      location: ../data/User.csv
+      path: ../data/User.csv
       properties:
         csv-header: false

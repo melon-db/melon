@@ -1,1 +1,3 @@
+org.h2.Driver
+net.seesharpsoft.melon.jdbc.MelonDriver
 net.seesharpsoft.melon.jdbc.MelonDbDriver
