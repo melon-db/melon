@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Storage extends PropertiesOwner {
 
-    String PROPERTY_STORAGE_MODE = "mode";
+    String PROPERTY_STORAGE_MODE = "storage-mode";
 
     String STORAGE_MODE_DEFAULT = "Default";
     String STORAGE_MODE_READONLY = "ReadOnly";

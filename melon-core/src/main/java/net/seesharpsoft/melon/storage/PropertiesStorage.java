@@ -11,17 +11,17 @@ import java.util.stream.Collectors;
 
 public class PropertiesStorage extends FileStorageBase {
 
-    public static final String PROPERTY_SEPARATOR = "properties-separator";
-    public static final String DEFAULT_SEPARATOR = "=";
-    
+    public static final String PROPERTY_DELIMITER = "properties-delimiter";
+    public static final String DEFAULT_DELIMITER = "=";
+
     public PropertiesStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);
     }
 
     protected String separator() {
-        return properties.getOrDefault(PROPERTY_SEPARATOR, DEFAULT_SEPARATOR);
+        return properties.getOrDefault(PROPERTY_DELIMITER, DEFAULT_DELIMITER);
     }
-    
+
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
         Properties dataProperties = Properties.read(file, separator());
