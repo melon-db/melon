@@ -16,6 +16,12 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ### v0.5.0
 
+- XML supports values as attributes
+- properties are by default case-insensitive
+- config property 'storage.location' is now 'storage.path'
+
+### v0.5.0
+
 - Column entity got a reference fields
 - foreign key definition and creation
 
