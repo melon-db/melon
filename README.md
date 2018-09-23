@@ -14,7 +14,7 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
-### v0.5.0
+### v0.6.0
 
 - XML supports values as attributes
 - properties are by default case-insensitive
