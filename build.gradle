@@ -9,22 +9,17 @@ buildscript {
 }
 
 plugins {
-    id 'jacoco'
-    id 'com.github.kt3k.coveralls' version '2.8.2'
+    id 'com.github.kt3k.coveralls' version '2.8.2' apply false
 }
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.kt3k.coveralls'
 
     shadowJar {
         classifier = 'DEV'
-    }
-
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-        }
     }
 
     group 'net.seesharpsoft.melon'
@@ -51,12 +46,54 @@ allprojects {
             showStandardStreams = true
         }
     }
-}
 
+    jacocoTestReport {
+        additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+        sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+        classDirectories = files(sourceSets.main.output)
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+        }
+    }
+}
 
 dependencies {
     testCompile project(path: ':melon-core', configuration: 'testFixtures')
     compile project(':melon-core')
     compile project(':melon-csv')
     compile project(':melon-html')
+}
+
+// coveralls does not support multi-module, therefore merging reports
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = [allprojects.test]
+    additionalSourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(allprojects.sourceSets.main.output)
+    executionData = files(allprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
+    }
+}
+
+coveralls {
+    sourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs).files.absolutePath
+    jacocoReportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
+}
+
+tasks.coveralls {
+    dependsOn jacocoRootReport
 }
