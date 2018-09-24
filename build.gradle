@@ -9,14 +9,17 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.kt3k.coveralls' version '2.8.2' apply false
+    id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'jacoco'
-    apply plugin: 'com.github.kt3k.coveralls'
+
+    jacoco {
+        toolVersion = '0.8.2'
+    }
 
     shadowJar {
         classifier = 'DEV'
@@ -57,6 +60,10 @@ allprojects {
             csv.enabled = false
         }
     }
+
+    tasks.jacocoTestReport {
+        dependsOn check
+    }
 }
 
 dependencies {
@@ -68,7 +75,7 @@ dependencies {
 
 // coveralls does not support multi-module, therefore merging reports
 task jacocoRootReport(type: JacocoReport) {
-    dependsOn = [allprojects.test]
+    dependsOn = [allprojects.jacocoTestReport]
     additionalSourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
     classDirectories = files(allprojects.sourceSets.main.output)
@@ -91,7 +98,7 @@ task jacocoRootReport(type: JacocoReport) {
 
 coveralls {
     sourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs).files.absolutePath
-    jacocoReportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
+    jacocoReportPath = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
 }
 
 tasks.coveralls {
