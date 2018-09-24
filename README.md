@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/melon-db/melon.svg?branch=master)](https://travis-ci.org/melon-db/melon)
+[![Coverage Status](https://coveralls.io/repos/github/melon-db/melon/badge.svg?branch=master)](https://coveralls.io/github/melon-db/melon?branch=master)
 
 # Melon
 
