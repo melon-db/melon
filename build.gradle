@@ -5,7 +5,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        classpath 'org.jacoco:jacoco-maven-plugin:0.8.2'
     }
 }
 
@@ -24,8 +23,7 @@ allprojects {
 
     jacocoTestReport {
         reports {
-            xml.enabled = true // coveralls plugin depends on xml format report
-            html.enabled = true
+            xml.enabled = true
         }
     }
 
