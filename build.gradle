@@ -1,10 +1,17 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath 'org.jacoco:jacoco-maven-plugin:0.8.2'
     }
+}
+
+plugins {
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
 allprojects {
@@ -14,7 +21,14 @@ allprojects {
     shadowJar {
         classifier = 'DEV'
     }
-    
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true // coveralls plugin depends on xml format report
+            html.enabled = true
+        }
+    }
+
     group 'net.seesharpsoft.melon'
     version = '0.6.0'
 
@@ -29,7 +43,18 @@ allprojects {
         testCompile 'com.h2database:h2:1.4.197'
         compileOnly 'org.projectlombok:lombok:1.18.2'
     }
+
+    test {
+        jacoco {
+            enabled = true
+        }
+        testLogging {
+            exceptionFormat = 'full'
+            showStandardStreams = true
+        }
+    }
 }
+
 
 dependencies {
     testCompile project(path: ':melon-core', configuration: 'testFixtures')
