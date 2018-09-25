@@ -7,6 +7,7 @@ import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.SchemaImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
+import net.seesharpsoft.melon.jdbc.MelonConnection;
 import net.seesharpsoft.melon.jdbc.MelonDriver;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
@@ -45,6 +46,7 @@ public class XmlStorageUT extends TestFixture {
                 "/files/Address_New.xml",
                 "/files/Address_Test.xml",
                 "/data/AddressAttributes.xml",
+                "/data/Country.xml",
                 "/XmlAttributes.yaml"
         };
     }
@@ -124,6 +126,34 @@ public class XmlStorageUT extends TestFixture {
         properties.put(Constants.PROPERTY_CONFIG_FILE, "/XmlAttributes.yaml");
         try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
             assertAddressData(connection);
+        }
+    }
+
+    @Test
+    public void should_read_country_xml() throws SQLException {
+        java.util.Properties properties = new java.util.Properties();
+        properties.put(Constants.PROPERTY_CONFIG_FILE, "/Country.yaml");
+        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+            ResultSet resultSet = connection.prepareStatement("SELECT COUNT(*) FROM COUNTRY").executeQuery();
+
+            assertThat(resultSet.next(), is(true));
+            assertThat(resultSet.getInt(1), is(250));
+        }
+    }
+
+    @Test
+    public void should_insert_into_country_xml() throws SQLException, IOException {
+        java.util.Properties properties = new java.util.Properties();
+        properties.put(Constants.PROPERTY_CONFIG_FILE, "/Country.yaml");
+        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+            int updatedRows = connection.prepareStatement("INSERT INTO COUNTRY (NAME, CCA2) VALUES ('SUMMERWORLD', 'SW')").executeUpdate();
+            assertThat(updatedRows, is(1));
+
+            connection.commit();
+
+            MelonConnection melonConnection = (MelonConnection)connection;
+            List<List<String>> data = melonConnection.getMelon().getSchema().getTable("Country").getStorage().read();
+            assertThat(data.size(), is(251));
         }
     }
 }

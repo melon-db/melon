@@ -18,7 +18,6 @@ public class XmlStorage extends FileStorageBase {
     public static final String PROPERTY_INDENT = "xml-indent";
     public static final int DEFAULT_INDENT = 4; // max: 32
 
-    public static final String PROPERTY_LINEBREAK = "xml-linebreak";
     public static final String DEFAULT_LINEBREAK = "\n";
 
     public static final String PROPERTY_FORMAT = "xml-format";
@@ -33,7 +32,7 @@ public class XmlStorage extends FileStorageBase {
     }
 
     protected String linebreak() {
-        return properties.getOrDefault(PROPERTY_LINEBREAK, DEFAULT_LINEBREAK);
+        return DEFAULT_LINEBREAK;
     }
 
     protected int indent() {
@@ -157,9 +156,10 @@ public class XmlStorage extends FileStorageBase {
                 for (int i = 0; i < columnSize; ++i) {
                     Column column = table.getColumns().get(i);
 
+                    String value = values.size() <= i || values.get(i) == null ? "" : values.get(i);
                     if (valuesAsElements()) {
                         writer.writeStartElement(column.getName());
-                        writer.writeCharacters(values.size() <= i ? "" : values.get(i));
+                        writer.writeCharacters(value);
                         writer.writeEndElement();
                         if (i == columnSize - 1) {
                             --level;
@@ -167,7 +167,7 @@ public class XmlStorage extends FileStorageBase {
                         linebreakAndIndent(writer, indent, level, linebreak);
                     }
                     if (valuesAsAttributes()) {
-                        writer.writeAttribute(column.getName(), values.size() <= i ? "" : values.get(i));
+                        writer.writeAttribute(column.getName(), value);
                     }
                 }
                 writer.writeEndElement();
@@ -175,6 +175,10 @@ public class XmlStorage extends FileStorageBase {
                     --level;
                 }
                 linebreakAndIndent(writer, indent, level, linebreak);
+
+                writer.flush();
+
+                fos.flush();
             }
 
             for (int i = 0; i < paths.length - 1; ++i) {

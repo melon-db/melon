@@ -1,0 +1,33 @@
+name: CountrySchema
+tables:
+  - name: Country
+    columns:
+      - name: name
+      - name: tld
+      - name: cca2
+        primary: true
+      - name: ccn3
+      - name: cca3
+      - name: cioc
+      - name: independent
+      - name: status
+      - name: currency
+      - name: callingCode
+      - name: capital
+      - name: altSpellings
+      - name: region
+      - name: subregion
+      - name: languages
+      - name: translations
+      - name: latlng
+      - name: demonym
+      - name: landlocked
+      - name: borders
+      - name: area
+      - name: flag
+    storage:
+      path: data/Country.xml
+      properties:
+        xml-record-path: /countries/country
+        xml-indent: 4
+        xml-format: Attributes
