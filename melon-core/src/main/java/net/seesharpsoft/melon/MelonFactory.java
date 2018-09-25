@@ -64,7 +64,7 @@ public class MelonFactory {
             infoProperties.putAll(properties);
             infoProperties.put(Constants.PROPERTY_CONFIG_FILE, file);
 
-            melon = new Melon(file.getName(), url, schemaConfig.getSchema(infoProperties), infoProperties);
+            melon = new Melon(url, schemaConfig.getSchema(infoProperties), infoProperties);
             CREATED_INFOS.put(url, melon);
         }
 

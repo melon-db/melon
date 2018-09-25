@@ -15,9 +15,6 @@ import java.util.List;
 public class Melon {
 
     @Getter
-    private final String id;
-
-    @Getter
     private final String url;
 
     @Getter
@@ -36,15 +33,20 @@ public class Melon {
 
     protected int melonSyncCounter;
 
-    public Melon(String id, String url, Schema schema, Properties properties) {
+    public Melon(String url, Schema schema, Properties properties) {
         this.url = url;
         this.schema = schema;
         this.properties = new Properties(properties);
-        this.id = id;
     }
 
     protected void clearDatabaseTable(Connection connection, Table table) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(table))) {
+            ps.execute();
+        }
+    }
+
+    protected void createSchema(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateSchemaStatement(getSchema()))) {
             ps.execute();
         }
     }
@@ -99,6 +101,8 @@ public class Melon {
         if (isInitialized()) {
             return;
         }
+        createSchema(connection);
+        connection.setSchema(SqlHelper.sanitizeDbName(getSchema().getName()));
         for (Table table : getSchema().getTables()) {
             createDatabaseSchemaTable(connection, table);
         }

@@ -1,9 +1,6 @@
 package net.seesharpsoft.melon.sql;
 
-import net.seesharpsoft.melon.Column;
-import net.seesharpsoft.melon.NamedEntity;
-import net.seesharpsoft.melon.Table;
-import net.seesharpsoft.melon.View;
+import net.seesharpsoft.melon.*;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -14,8 +11,8 @@ import java.util.stream.Collectors;
 
 public class SqlHelper {
 
-    private static String sanitizeDbName(String name) {
-        return name.replaceAll("\\W", "_");
+    public static String sanitizeDbName(String name) {
+        return name.replaceAll("^[\\d\\W]*", "").replaceAll("\\W", "_").toUpperCase();
     }
 
     public static String generateInsertStatement(Table table) {
@@ -175,5 +172,11 @@ public class SqlHelper {
 
     private SqlHelper() {
         // static
+    }
+
+    public static String generateCreateSchemaStatement(Schema schema) {
+        StringBuilder builder = new StringBuilder("CREATE SCHEMA IF NOT EXISTS ")
+                .append(sanitizeDbName(schema.getName()));
+        return builder.toString();
     }
 }

@@ -89,7 +89,7 @@ public class MelonDbDriver implements Driver {
         String melonUrl = String.format("%s%s%s",
                 MELON_URL_PREFIX,
                 MELON_DB_DRIVER_URL,
-                melonInfo.getOrDefault(PROPERTY_DB_NAME, new File(configFile).getName()).toString());
+                melonInfo.getOrDefault(PROPERTY_DB_NAME, new File(configFile).getAbsolutePath()).toString());
         
         return DriverManager.getConnection(melonUrl, melonInfo);
     }
