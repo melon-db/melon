@@ -3,19 +3,20 @@ package net.seesharpsoft.melon.storage;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Table;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
 public abstract class FileStorageBase extends StorageBase {
-    
-    public static final String PROPERTY_CHARSET = "charset";
 
-    public static final String DEFAULT_CHARSET = "UTF-8";
-    
+    public static final String PROPERTY_ENCODING = "storage-encoding";
+
+    public static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
+
     protected File file;
-    
+
     public FileStorageBase(Table table, Properties properties, File file) throws IOException {
         super(table, properties);
         Objects.requireNonNull(file, "file must not be null!");
@@ -29,8 +30,25 @@ public abstract class FileStorageBase extends StorageBase {
         }
     }
 
-    protected String getCharset() {
-        return this.properties.getOrDefault(PROPERTY_CHARSET, DEFAULT_CHARSET);
+    protected Charset getEncoding() {
+        String charsetName = this.properties.get(PROPERTY_ENCODING);
+        return charsetName == null ? DEFAULT_ENCODING : Charset.forName(charsetName);
+    }
+
+    protected Reader getReader() throws FileNotFoundException, UnsupportedEncodingException {
+        return getReader(this.file);
+    }
+
+    protected Reader getReader(File file) throws FileNotFoundException, UnsupportedEncodingException {
+        return new InputStreamReader(new FileInputStream(file.getAbsolutePath()), getEncoding());
+    }
+
+    protected Writer getWriter() throws FileNotFoundException, UnsupportedEncodingException {
+        return getWriter(this.file);
+    }
+
+    protected Writer getWriter(File file) throws FileNotFoundException, UnsupportedEncodingException {
+        return new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), getEncoding());
     }
 
     @Override
@@ -42,11 +60,11 @@ public abstract class FileStorageBase extends StorageBase {
     protected long getSyncTime() {
         return file.lastModified();
     }
-    
+
     protected List<List<String>> read(Table table, Properties properties) throws IOException {
         return read(file, table, properties);
     }
-    
+
     protected void write(Table table, Properties properties, List<List<String>> records) throws IOException {
         write(file, table, properties, records);
     }

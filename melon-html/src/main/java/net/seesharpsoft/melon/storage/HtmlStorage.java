@@ -22,10 +22,10 @@ public class HtmlStorage extends FileStorageBase {
 
     public static final String PROPERTY_HEAD_CONTENT = "html-header";
     public static final String PROPERTY_FORMAT = "html-format";
-    
+
     public static final String FORMAT_TABLE = "Table";
     public static final String FORMAT_LIST = "List";
-    
+
     public static final String PROPERTY_COLUMN_ATTRIBUTES = "html-column-attributes";
     public static final String PROPERTY_RECORD_ATTRIBUTES = "html-record-attributes";
 
@@ -36,11 +36,11 @@ public class HtmlStorage extends FileStorageBase {
     protected String getFormat() {
         return getProperties().getOrDefault(PROPERTY_FORMAT, FORMAT_LIST);
     }
-    
+
     protected String getHeader() {
         return getProperties().getOrDefault(PROPERTY_HEAD_CONTENT, null);
     }
-    
+
     protected  List<List<String>> readDivFormat(Document htmlDocument, Table table) {
         List<Column> columns = table.getColumns();
         List<String> attributeColumns = getAttributeColumns(getRecordAttributes());
@@ -65,7 +65,7 @@ public class HtmlStorage extends FileStorageBase {
         }
         return result;
     }
-    
+
     protected Map<String, String> getRecordAttributes() {
         return getProperties().getOrDefault(PROPERTY_RECORD_ATTRIBUTES, Collections.emptyMap());
     }
@@ -83,23 +83,23 @@ public class HtmlStorage extends FileStorageBase {
         });
         return attributeColumns;
     }
-    
+
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
-        Document htmlDocument = Jsoup.parse(file, getCharset());
+        Document htmlDocument = Jsoup.parse(file, getEncoding().name());
         switch (getFormat()) {
             case FORMAT_LIST:
                 return readDivFormat(htmlDocument, table);
             case FORMAT_TABLE:
                 throw new NotImplementedException();
             default:
-                throw new NotImplementedException();    
+                throw new NotImplementedException();
         }
     }
 
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
-        Document htmlDocument = Jsoup.parse(file, getCharset());
+        Document htmlDocument = Jsoup.parse(file, getEncoding().name());
         htmlDocument.body().children().clear();
         String header = getHeader();
         if (header != null) {
@@ -144,7 +144,7 @@ public class HtmlStorage extends FileStorageBase {
                             throw new NotImplementedException();
                     }
                 }
-                
+
             });
             for (int i = 0; i < columns.size(); ++i) {
                 final int index = i;
@@ -167,11 +167,11 @@ public class HtmlStorage extends FileStorageBase {
                                     throw new NotImplementedException();
                             }
                         }
-                        
+
                     });
                     recordElement.children().add(columnElement);
                 }
-            }            
+            }
             htmlDocument.body().children().add(recordElement);
         }
     }

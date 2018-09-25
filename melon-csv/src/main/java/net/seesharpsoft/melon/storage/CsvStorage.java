@@ -8,10 +8,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +17,7 @@ public class CsvStorage extends FileStorageBase {
 
     public static final String HAS_HEADER = "csv-header";
     public static final boolean DEFAULT_HAS_HEADER = true;
-    
+
     public static final String PROPERTY_TRIM_VALUES = "csv-trim";
     public static final boolean DEFAULT_TRIM_VALUES = true;
 
@@ -56,7 +53,7 @@ public class CsvStorage extends FileStorageBase {
         List<List<String>> records = new ArrayList<>();
         List<Column> columns = table.getColumns();
         try (
-                FileReader reader = new FileReader(file);
+                Reader reader = getReader(file);
                 CSVParser csvParser = new CSVParser(reader, getCSVFormat(false))
         ) {
             for (CSVRecord record : csvParser) {
@@ -74,7 +71,7 @@ public class CsvStorage extends FileStorageBase {
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
         try (
-                FileWriter writer = new FileWriter(file);
+                Writer writer = getWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, getCSVFormat(true))
         ) {
             for (List<String> values : records) {

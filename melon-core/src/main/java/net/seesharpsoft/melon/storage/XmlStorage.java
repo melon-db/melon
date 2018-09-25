@@ -58,7 +58,7 @@ public class XmlStorage extends FileStorageBase {
         List<String> currentValues = null;
         try (FileInputStream fis = new FileInputStream(file)) {
             XMLInputFactory xmlInFact = XMLInputFactory.newInstance();
-            XMLStreamReader reader = xmlInFact.createXMLStreamReader(fis);
+            XMLStreamReader reader = xmlInFact.createXMLStreamReader(fis, getEncoding().name());
             while (reader.hasNext()) {
                 reader.next(); // do something here
 
@@ -134,7 +134,7 @@ public class XmlStorage extends FileStorageBase {
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             XMLOutputFactory xmlOutFact = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = xmlOutFact.createXMLStreamWriter(fos);
+            XMLStreamWriter writer = xmlOutFact.createXMLStreamWriter(fos, getEncoding().name());
             writer.writeStartDocument();
             linebreakAndIndent(writer, indent, level, linebreak);
 

@@ -24,7 +24,7 @@ public class PropertiesStorage extends FileStorageBase {
 
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
-        Properties dataProperties = Properties.read(file, separator());
+        Properties dataProperties = Properties.read(file, separator(), getEncoding());
 
         return dataProperties.entrySet().stream()
                 .map(entry -> {
@@ -43,6 +43,6 @@ public class PropertiesStorage extends FileStorageBase {
         for (List<String> values : records) {
             dataProperties.put(values.get(0), values.size() > 1 ? values.get(1) : null);
         }
-        dataProperties.store(file, separator(), false);
+        dataProperties.store(file, separator(), getEncoding(), false);
     }
 }

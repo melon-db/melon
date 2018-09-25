@@ -1,6 +1,8 @@
 package net.seesharpsoft.commons.collection;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,15 +12,14 @@ import java.util.stream.Collectors;
 public class Properties implements Map {
 
     public static final String DEFAULT_KEY_VALUE_SEPARATOR = "=";
-
     public static final String COMMENT_LINE_BEGINNING = "#";
 
-    public static Properties read(File file, String keyValueSeparator) throws IOException {
+    public static Properties read(File file, String keyValueSeparator, Charset encoding) throws IOException {
         if(!file.exists()) {
             return null;
         }
         Properties result = new Properties();
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding))) {
             reader.lines().forEach(line -> {
                 String trimmedLine = line.trim();
                 if (!trimmedLine.startsWith(COMMENT_LINE_BEGINNING)) {
@@ -33,7 +34,15 @@ public class Properties implements Map {
     }
 
     public static Properties read(File file) throws IOException {
-        return read(file, DEFAULT_KEY_VALUE_SEPARATOR);
+        return read(file, DEFAULT_KEY_VALUE_SEPARATOR, StandardCharsets.UTF_8);
+    }
+
+    public static Properties read(File file, String keyValueSeparator) throws IOException {
+        return read(file, keyValueSeparator, StandardCharsets.UTF_8);
+    }
+
+    public static Properties read(File file, Charset encoding) throws IOException {
+        return read(file, DEFAULT_KEY_VALUE_SEPARATOR, encoding);
     }
 
     private final Map properties;
@@ -151,14 +160,14 @@ public class Properties implements Map {
         return result;
     }
 
-    public void store(File file, String keyValueSeparator, boolean deep) throws IOException {
+    public void store(File file, String keyValueSeparator, Charset encoding, boolean deep) throws IOException {
         if(!file.exists()) {
             if (!file.createNewFile()) {
                 throw new IOException("can not create file " + file);
             }
         }
 
-        try(final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try(final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), encoding))) {
             Set<Entry> entries = deep ? this.entrySet() : properties.entrySet();
             for (Entry entry : entries) {
                 if (entry.getKey() != null) {
@@ -173,11 +182,11 @@ public class Properties implements Map {
     }
 
     public void store(File file, String keyValueSeparator) throws IOException {
-        store(file, keyValueSeparator, true);
+        store(file, keyValueSeparator, StandardCharsets.UTF_8, true);
     }
 
     public void store(File file, boolean deep) throws IOException {
-        store(file, DEFAULT_KEY_VALUE_SEPARATOR, deep);
+        store(file, DEFAULT_KEY_VALUE_SEPARATOR, StandardCharsets.UTF_8, deep);
     }
 
     public void store(File file) throws IOException {
