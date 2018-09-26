@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XmlStorage extends FileStorageBase {
-    public static final String PROPERTY_ROOT = "xml-record-path";
+    public static final String PROPERTY_ROOT_PATH = "xml-record-path";
+    public static final String ROOT_PATH_DEFAULT = "/records/record";
 
     public static final String PROPERTY_INDENT = "xml-indent";
     public static final int DEFAULT_INDENT = 4; // max: 32
@@ -47,10 +48,14 @@ public class XmlStorage extends FileStorageBase {
         return properties.getOrDefault(PROPERTY_FORMAT, DEFAULT_FORMAT).equals(FORMAT_ATTRIBUTES);
     }
 
+    protected String rootPath() {
+        return properties.getOrDefault(PROPERTY_ROOT_PATH, ROOT_PATH_DEFAULT);
+    }
+
     @Override
     protected List<List<String>> read(File file, Table table, Properties properties) throws IOException {
         String currentPath = "";
-        String rootPath = properties.get(PROPERTY_ROOT);
+        String rootPath = rootPath();
         boolean readValue = false;
 
         List<Column> columns = table.getColumns();
@@ -125,7 +130,7 @@ public class XmlStorage extends FileStorageBase {
 
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
-        String root = properties.get(PROPERTY_ROOT);
+        String root = rootPath();
         String[] paths = root.split("/");
         String indent = createIndent(indent());
         String linebreak = linebreak();

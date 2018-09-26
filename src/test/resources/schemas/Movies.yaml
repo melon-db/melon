@@ -1,0 +1,26 @@
+name: Movies
+tables:
+  - name: Movie
+    columns:
+      - name: Name
+        primary: true
+      - name: Year
+      - name: Country
+    storage:
+      path: movies.xml
+  - name: OriginalName
+    columns:
+      - name: id
+        primary: true
+        reference: Movie
+      - name: Name
+    storage:
+      path: original_name.properties
+  - name: MyMovie
+    columns:
+      - name: Movie
+        primary: true
+        reference: Movie
+      - name: Rating
+    storage:
+      path: my_movies.csv

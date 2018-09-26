@@ -62,7 +62,7 @@ public class XmlStorageUT extends TestFixture {
         column = new ColumnImpl(table, "country", new Properties());
         table.addColumn(column);
         Properties properties = new Properties();
-        properties.put(XmlStorage.PROPERTY_ROOT, "/address/data_record");
+        properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
         XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/data/Address.xml"));
 
         List<List<String>> data = storage.read();
@@ -81,7 +81,7 @@ public class XmlStorageUT extends TestFixture {
         column = new ColumnImpl(table, "country", new Properties());
         table.addColumn(column);
         Properties properties = new Properties();
-        properties.put(XmlStorage.PROPERTY_ROOT, "/address/data_record");
+        properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
         XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/files/Address_New.xml"));
 
         List<List<String>> data = storage.read(MelonHelper.getFile("/data/Address.xml"), table, properties);
@@ -106,7 +106,7 @@ public class XmlStorageUT extends TestFixture {
         column = new ColumnImpl(table, "userId", new Properties());
         table.addColumn(column);
         Properties properties = new Properties();
-        properties.put(XmlStorage.PROPERTY_ROOT, "/address/data_record");
+        properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
         XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/files/Address_Test.xml"));
 
         List<List<String>> data = storage.read(MelonHelper.getFile("/files/Address_Test.xml"), table, properties);

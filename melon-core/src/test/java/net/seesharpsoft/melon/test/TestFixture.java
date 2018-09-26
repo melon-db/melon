@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public abstract class TestFixture {
@@ -22,6 +24,9 @@ public abstract class TestFixture {
     public static void createBackupFiles(String[] fileNames) throws IOException {
         for (String fileName : fileNames) {
             File testFile = MelonHelper.getFile(fileName);
+            if (!testFile.exists()) {
+                continue;
+            }
             File backupFile = new File(testFile.getAbsolutePath() + "_BACKUP");
             if (!backupFile.exists()) {
                 backupFile.createNewFile();
@@ -35,8 +40,16 @@ public abstract class TestFixture {
 
     public static void restoreBackupFiles(String[] fileNames) throws IOException {
         for (String fileName : fileNames) {
-            try(FileWriter writer = new FileWriter(MelonHelper.getFile(fileName))) {
-                writer.write(SharpIO.readAsString(MelonHelper.getFile(fileName + "_BACKUP").getAbsolutePath()));
+            File file = MelonHelper.getFile(fileName);
+            File backupFile = MelonHelper.getFile(fileName + "_BACKUP");
+            if (!backupFile.exists()) {
+                if (file.exists()) {
+                    file.delete();
+                }
+                continue;
+            }
+            try(FileWriter writer = new FileWriter(file)) {
+                writer.write(SharpIO.readAsString(backupFile.getAbsolutePath()));
                 writer.flush();
             }
         }

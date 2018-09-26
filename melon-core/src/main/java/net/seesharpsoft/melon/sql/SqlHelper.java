@@ -129,7 +129,7 @@ public class SqlHelper {
                             .filter(column -> column.isPrimary())
                             .map(column -> column.getName())
                             .collect(Collectors.toList()), ",", true))
-                    .append(") ON DELETE CASCADE");
+                    .append(") ON DELETE SET NULL ON UPDATE CASCADE");
         }
 
         builder.append(")");

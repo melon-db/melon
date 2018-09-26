@@ -144,30 +144,29 @@ public class HtmlStorage extends FileStorageBase {
                             throw new NotImplementedException();
                     }
                 }
-
             });
             for (int i = 0; i < columns.size(); ++i) {
                 final int index = i;
                 Column column = columns.get(i);
+                String value = values.size() <= i || values.get(i) == null ? "" : values.get(i);
                 if (attributeColumns.contains(column.getName())) {
-                    recordElement.attr(column.getName(), values.get(i));
+                    recordElement.attr(column.getName(), value);
                 } else {
                     Element columnElement = new Element( "div");
-                    columnAttributes.forEach((key, value) -> {
-                        ReferenceType referenceType = MelonHelper.getReferenceType(value);
+                    columnAttributes.forEach((attributeName, attributeValue) -> {
+                        ReferenceType referenceType = MelonHelper.getReferenceType(attributeValue);
                         if (referenceType != null) {
                             switch (referenceType) {
                                 case NAME:
-                                    columnElement.attr(key, column.getName());
+                                    columnElement.attr(attributeName, column.getName());
                                     break;
                                 case INDEX:
-                                    columnElement.attr(key, String.valueOf(index));
+                                    columnElement.attr(attributeName, String.valueOf(index));
                                     break;
                                 default:
                                     throw new NotImplementedException();
                             }
                         }
-
                     });
                     recordElement.children().add(columnElement);
                 }
