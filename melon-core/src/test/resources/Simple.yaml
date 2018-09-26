@@ -8,6 +8,6 @@ tables:
       - name: country
       - name: userId
     storage:
-      path: data/Address.xml
+      uri: data/Address.xml
       properties:
         xml-record-path: /ADDRESS/DATA_RECORD

@@ -8,7 +8,7 @@ tables:
       - name: country
       - name: userId
     storage:
-      path: data/AddressAttributes.xml
+      uri: data/AddressAttributes.xml
       properties:
         xml-record-path: /ADDRESS/DATA_RECORD
         xml-format: Attributes

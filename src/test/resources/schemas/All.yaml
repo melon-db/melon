@@ -8,14 +8,14 @@ tables:
       - name: lastName
       - name: additional
     storage:
-      path: ../data/User.csv
+      uri: ../data/User.csv
   - name: Team
     columns:
       - name: id
         primary: true
       - name: name
     storage:
-      path: ../data/Team.properties
+      uri: ../data/Team.properties
   - name: TeamMembers
     columns:
       - name: teamId
@@ -25,7 +25,7 @@ tables:
         primary: true
         reference: User
     storage:
-      path: ../data/TeamMembers.csv
+      uri: ../data/TeamMembers.csv
       properties:
         csv-header: false
   - name: Address
@@ -37,7 +37,7 @@ tables:
       - name: userId
         reference: User
     storage:
-      path: ../data/Address.xml
+      uri: ../data/Address.xml
       properties:
         xml-record-path: /ADDRESS/DATA_RECORD
 views:

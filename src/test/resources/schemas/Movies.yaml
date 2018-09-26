@@ -7,7 +7,7 @@ tables:
       - name: Year
       - name: Country
     storage:
-      path: movies.xml
+      uri: movies.xml
   - name: OriginalName
     columns:
       - name: id
@@ -15,7 +15,7 @@ tables:
         reference: Movie
       - name: Name
     storage:
-      path: original_name.properties
+      uri: original_name.properties
   - name: MyMovie
     columns:
       - name: Movie
@@ -23,4 +23,4 @@ tables:
         reference: Movie
       - name: Rating
     storage:
-      path: my_movies.csv
+      uri: my_movies.csv

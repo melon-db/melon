@@ -1,16 +1,10 @@
 package net.seesharpsoft.melon.jdbc;
 
-import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class MoviesUT extends TestFixture {
     @Override
@@ -28,7 +22,7 @@ public class MoviesUT extends TestFixture {
     public void should_insert_new_entry_in_empty_file() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/Movies.yaml")) {
 
-            connection.prepareStatement("INSERT INTO Movie (id) VALUES ('Test')").execute();
+            connection.prepareStatement("INSERT INTO Movie (NAME) VALUES ('Test')").execute();
             connection.commit();
 
         }

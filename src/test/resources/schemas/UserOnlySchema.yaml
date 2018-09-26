@@ -8,4 +8,4 @@ tables:
       - name: lastName
       - name: additional
     storage:
-      path: ../data/User.csv
+      uri: ../data/User.csv
