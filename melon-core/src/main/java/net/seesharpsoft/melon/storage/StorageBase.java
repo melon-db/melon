@@ -3,13 +3,17 @@ package net.seesharpsoft.melon.storage;
 import lombok.Getter;
 import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
+import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class StorageBase implements Storage {
 
@@ -30,15 +34,27 @@ public abstract class StorageBase implements Storage {
         this.lastSynced = 0;
     }
 
+    protected List<List<String>> validateData(List<List<String>> data, Table table, Properties properties) {
+        final List<Column> columns = table.getColumns();
+        return data.stream().filter(record -> {
+            for (int i = 0; i < columns.size(); ++i) {
+                if (columns.get(i).isPrimary() && record.get(i) == null) {
+                    return false;
+                }
+            }
+            return true;
+        }).collect(Collectors.toList());
+    }
+    
     @Override
-    public List<List<String>> read() throws IOException {
+    public final List<List<String>> read() throws IOException {
         List<List<String>> result = read(this.table, this.properties);
         setLastSynced(getSyncTime());
-        return result;
+        return validateData(result, this.table, this.properties);
     }
 
     @Override
-    public void write(List<List<String>> records) throws IOException {
+    public final void write(List<List<String>> records) throws IOException {
         if (getProperties().getOrDefault(PROPERTY_STORAGE_MODE, STORAGE_MODE_DEFAULT).equals(STORAGE_MODE_READONLY)) {
             return;
         }

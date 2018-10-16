@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,10 @@ public class HtmlStorageUT extends TestFixture {
     public String[] getResourceFiles() {
         return new String[] {
                 "/Simple.yaml",
-                "/data/SimpleText.html"
+                "/data/SimpleText.html",
+                "/Translation.yml",
+                "/data/Text.properties",
+                "/data/Text_Localized.html"
         };
     }
     
@@ -65,5 +69,22 @@ public class HtmlStorageUT extends TestFixture {
                     is(SharpIO.readAsString(MelonHelper.getFile("/results/SimpleText.html").getAbsolutePath())));
         }
     }
-    
+
+    @Test
+    public void should_write_html_2() throws SQLException, IOException {
+        try (MelonConnection connection = getConnection("/Translation.yml")) {
+            Storage storage = connection.getMelon().getSchema().getTable("Translation").getStorage();
+
+            List<List<String>> entries = new ArrayList<>();
+
+            entries.add(Arrays.asList("id 1", "Title 1", "Text 1"));
+            entries.add(Arrays.asList("id 2", "Title 2", "Text 2"));
+
+            storage.write(entries);
+
+            assertThat(SharpIO.readAsString(MelonHelper.getFile("/data/Text_Localized.html").getAbsolutePath()),
+                    is(SharpIO.readAsString(MelonHelper.getFile("/results/Text_Localized.html").getAbsolutePath())));
+        }
+    }
+
 }

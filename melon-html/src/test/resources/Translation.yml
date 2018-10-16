@@ -1,0 +1,26 @@
+name: ActionProposals
+properties:
+  html-format: List
+  html-header: <meta httpequiv="content-type" content="text/html" charset="utf-8">
+  html-record-attributes:
+    type: record
+    id: $column:identifier$
+  html-column-attributes:
+    type: field
+    id: $name$
+tables:
+  - name: Text
+    columns:
+      - name: identifier
+        primary: true
+    storage:
+      uri: data/Text.properties
+  - name: Translation
+    columns:
+      - name: identifier
+        primary: true
+        reference: Text
+      - name: title
+      - name: text
+    storage:
+      uri: data/Text_Localized.html

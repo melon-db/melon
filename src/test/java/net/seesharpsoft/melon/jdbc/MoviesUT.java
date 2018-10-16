@@ -10,16 +10,15 @@ public class MoviesUT extends TestFixture {
     @Override
     public String[] getResourceFiles() {
         return new String[] {
-                "/schemas/movies.yaml",
+                "/schemas/Movies.yaml",
                 "/data/movies.xml",
                 "/data/movies_title.properties",
-                "/data/movies_title_de.properties",
                 "/data/my_movies.csv"
         };
     }
 
     @Test
-    public void should_insert_new_entry_in_empty_file() throws SQLException, IOException {
+    public void should_insert_new_entry_in_empty_file() throws SQLException {
         try (MelonConnection connection = getConnection("/schemas/Movies.yaml")) {
 
             connection.prepareStatement("INSERT INTO Movie (NAME) VALUES ('Test')").execute();

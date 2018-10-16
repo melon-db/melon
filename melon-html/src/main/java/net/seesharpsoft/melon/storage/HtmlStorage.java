@@ -13,10 +13,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HtmlStorage extends FileStorageBase {
 
@@ -43,15 +40,15 @@ public class HtmlStorage extends FileStorageBase {
 
     protected  List<List<String>> readDivFormat(Document htmlDocument, Table table) {
         List<Column> columns = table.getColumns();
-        List<String> attributeColumns = getAttributeColumns(getRecordAttributes());
+        Map<String, String> attributeColumns = getAttributeColumns(getRecordAttributes());
 
         List<List<String>> result = new ArrayList<>();
         for (Element element : htmlDocument.body().children()) {
             List<String> values = new ArrayList<>();
             int currentChildIndex = 0;
             for (Column column : columns) {
-                if (attributeColumns.contains(column.getName())) {
-                    values.add(element.attr(column.getName()));
+                if (attributeColumns.containsKey(column.getName())) {
+                    values.add(element.attr(attributeColumns.get(column.getName())));
                 } else {
                     if (currentChildIndex < element.children().size()) {
                         values.add(element.child(currentChildIndex).text());
@@ -74,11 +71,11 @@ public class HtmlStorage extends FileStorageBase {
         return getProperties().getOrDefault(PROPERTY_COLUMN_ATTRIBUTES, Collections.emptyMap());
     }
 
-    protected List<String> getAttributeColumns(Map<String, String> recordAttributes) {
-        final List<String> attributeColumns = new ArrayList<>();
+    protected Map<String, String> getAttributeColumns(Map<String, String> recordAttributes) {
+        final Map<String, String> attributeColumns = new TreeMap<>();
         recordAttributes.forEach((key, value) -> {
             if (MelonHelper.getReferenceType(value) == ReferenceType.COLUMN) {
-                attributeColumns.add(MelonHelper.getReferenceArgument(value));
+                attributeColumns.put(MelonHelper.getReferenceArgument(value), key);
             }
         });
         return attributeColumns;
@@ -100,10 +97,10 @@ public class HtmlStorage extends FileStorageBase {
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
         Document htmlDocument = Jsoup.parse(file, getEncoding().name());
-        htmlDocument.body().children().clear();
+        htmlDocument.body().empty();
         String header = getHeader();
         if (header != null) {
-            htmlDocument.head().children().clear();
+            htmlDocument.head().empty();
             htmlDocument.head().html(header);
         }
         switch (getFormat()) {
@@ -126,7 +123,7 @@ public class HtmlStorage extends FileStorageBase {
         List<Column> columns = table.getColumns();
         Map<String, String> recordAttributes = getRecordAttributes();
         Map<String, String> columnAttributes = getColumnAttributes();
-        List<String> attributeColumns = getAttributeColumns(recordAttributes);
+        Map<String, String> attributeColumns = getAttributeColumns(recordAttributes);
 
         for (List<String> values : records) {
             Element recordElement = new Element("div");
@@ -143,14 +140,16 @@ public class HtmlStorage extends FileStorageBase {
                         default:
                             throw new NotImplementedException();
                     }
+                } else {
+                    recordElement.attr(key, value);
                 }
             });
             for (int i = 0; i < columns.size(); ++i) {
                 final int index = i;
                 Column column = columns.get(i);
                 String value = values.size() <= i || values.get(i) == null ? "" : values.get(i);
-                if (attributeColumns.contains(column.getName())) {
-                    recordElement.attr(column.getName(), value);
+                if (attributeColumns.containsKey(column.getName())) {
+                    recordElement.attr(attributeColumns.get(column.getName()), value);
                 } else {
                     Element columnElement = new Element( "div");
                     columnAttributes.forEach((attributeName, attributeValue) -> {
@@ -166,12 +165,15 @@ public class HtmlStorage extends FileStorageBase {
                                 default:
                                     throw new NotImplementedException();
                             }
+                        } else {
+                            columnElement.attr(attributeName, attributeValue);
                         }
                     });
-                    recordElement.children().add(columnElement);
+                    columnElement.append(value);
+                    recordElement.appendChild(columnElement);
                 }
             }
-            htmlDocument.body().children().add(recordElement);
+            htmlDocument.body().appendChild(recordElement);
         }
     }
 }
