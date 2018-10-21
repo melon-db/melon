@@ -1,9 +1,10 @@
 package net.seesharpsoft.melon.config;
 
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.*;
+import net.seesharpsoft.melon.Storage;
+import net.seesharpsoft.melon.StorageFactory;
+import net.seesharpsoft.melon.Table;
 
-import java.io.File;
 import java.io.IOException;
 
 public class StorageConfig extends ConfigBase {
@@ -12,12 +13,7 @@ public class StorageConfig extends ConfigBase {
     public Storage getStorage(Table table, Properties additionalProperties) {
         Properties finalProperties = getProperties(additionalProperties);
         try {
-            if (uri != null && !uri.isEmpty()) {
-                File targetFile = MelonHelper.getFile(uri, ((File) additionalProperties.get(Constants.PROPERTY_CONFIG_FILE)).getParentFile().getAbsolutePath());
-
-                return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, targetFile);
-            }
-            return StorageFactory.INSTANCE.createStorageFor(table, finalProperties, null);
+            return StorageFactory.INSTANCE.createStorageFor(table, uri, finalProperties);
         } catch (IOException exc) {
             exc.printStackTrace();
         }

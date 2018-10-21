@@ -8,9 +8,7 @@ import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,12 +24,17 @@ public abstract class StorageBase implements Storage {
     @Getter
     private long lastSynced;
 
+    @Setter
+    @Getter
+    private long lastModified;
+
     public StorageBase(Table table, Properties properties) {
         Objects.requireNonNull(table, "table must not be null!");
         Objects.requireNonNull(properties, "properties must not be null!");
         this.table = table;
         this.properties = properties;
         this.lastSynced = 0;
+        this.setLastModified(getSyncTime());
     }
 
     protected List<List<String>> validateData(List<List<String>> data, Table table, Properties properties) {
@@ -45,7 +48,7 @@ public abstract class StorageBase implements Storage {
             return true;
         }).collect(Collectors.toList());
     }
-    
+
     @Override
     public final List<List<String>> read() throws IOException {
         List<List<String>> result = read(this.table, this.properties);
@@ -59,16 +62,18 @@ public abstract class StorageBase implements Storage {
             return;
         }
         write(this.table, this.properties, records);
-        setLastSynced(getSyncTime());
+        long currentTime = getSyncTime();
+        setLastModified(currentTime);
+    }
+
+    @Override
+    public Column getColumn(String name) {
+        return this.table.getColumn(name);
     }
 
     @Override
     public boolean hasChanges() {
         return getLastSynced() == 0 || getLastModified() > getLastSynced();
-    }
-
-    protected long getLastModified() {
-        return getLastSynced();
     }
 
     protected long getSyncTime() {

@@ -7,13 +7,15 @@ import net.seesharpsoft.melon.impl.ColumnImpl;
 import java.util.Objects;
 
 public class ColumnConfig extends ConfigBase {
-    
+
     public String name;
-    
+
     public boolean primary = false;
-    
+
     public String reference = null;
-    
+
+    public String source = null;
+
     public ColumnImpl getColumn(Table table, Properties additionalProperties) {
         ColumnImpl column = new ColumnImpl(table, name, getProperties(additionalProperties));
         column.setPrimary(primary);
@@ -22,6 +24,10 @@ public class ColumnConfig extends ConfigBase {
             Objects.requireNonNull(referencedTable, String.format("referenced table '%s' not found", referencedTable));
             column.setReference(referencedTable);
         }
+        if (source != null && !source.isEmpty()) {
+            column.setSource(source);
+        }
+
         return column;
     }
 }

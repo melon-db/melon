@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<CUSTOMER>
+  <DATA_RECORD>
+    <EMAIL>arandal@att.net</EMAIL>
+    <FIRSTNAME>Arandal</FIRSTNAME>
+    <LASTNAME>Matthew</LASTNAME>
+    <COUNTRY>IS</COUNTRY>
+  </DATA_RECORD>
+  <DATA_RECORD>
+    <EMAIL>danzigism@icloud.com</EMAIL>
+    <FIRSTNAME>Daniel</FIRSTNAME>
+    <LASTNAME>Ziggy</LASTNAME>
+    <COUNTRY>NE</COUNTRY>
+  </DATA_RECORD>
+  <DATA_RECORD>
+    <EMAIL>mddallara@yahoo.com</EMAIL>
+    <FIRSTNAME>Madam</FIRSTNAME>
+    <LASTNAME>Dallara</LASTNAME>
+    <COUNTRY>US</COUNTRY>
+  </DATA_RECORD>
+</CUSTOMER>

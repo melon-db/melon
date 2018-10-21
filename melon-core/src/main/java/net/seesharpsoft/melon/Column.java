@@ -16,4 +16,6 @@ public interface Column extends PropertiesOwner, NamedEntity {
      * @return the referenced table, null if column is not a reference
      */
     Table getReference();
+
+    String getSource();
 }

@@ -52,13 +52,13 @@ public abstract class FileStorageBase extends StorageBase {
     }
 
     @Override
-    protected long getLastModified() {
+    public long getLastModified() {
         return file.lastModified();
     }
 
     @Override
     protected long getSyncTime() {
-        return file.lastModified();
+        return file == null ? Long.MAX_VALUE : file.lastModified();
     }
 
     protected List<List<String>> read(Table table, Properties properties) throws IOException {
