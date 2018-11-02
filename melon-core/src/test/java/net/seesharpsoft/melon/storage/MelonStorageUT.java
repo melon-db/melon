@@ -1,21 +1,19 @@
 package net.seesharpsoft.melon.storage;
 
-import net.seesharpsoft.melon.Constants;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonDriver;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class MelonStorageUT extends TestFixture {
@@ -45,6 +43,18 @@ public class MelonStorageUT extends TestFixture {
         }
     }
 
+    public static void assertData(ResultSet rs, List<List<String>> results) throws SQLException {
+        for (List<String> record : results) {
+            assertThat(rs.next(), is(true));
+
+            for (int index = 0; index < record.size(); ++index) {
+                assertEquals(record.get(index), rs.getString(index + 1));
+            }
+        }
+
+        assertThat(rs.next(), is(false));
+    }
+
     @Override
     public String[] getResourceFiles() {
         return new String[] {
@@ -56,9 +66,7 @@ public class MelonStorageUT extends TestFixture {
 
     @Test
     public void melon_storage_should_be_created() throws SQLException {
-        java.util.Properties properties = new java.util.Properties();
-        properties.put(Constants.PROPERTY_CONFIG_FILE, "/melonstorage/config.yaml");
-        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+        try (Connection connection = getConnection("/melonstorage/config.yaml")) {
             assertData(connection);
         }
     }
@@ -76,6 +84,47 @@ public class MelonStorageUT extends TestFixture {
             storage = connection.getMelon().getSchema().getTable("Country").getStorage();
             records = storage.read();
             assertThat(records.stream().filter(record -> record.get(0).equals("NE")).findFirst().orElse(null), is(Arrays.asList("NE", "Test Country")));
+        }
+    }
+
+    @Test
+    public void melon_storage_changes_should_update_referenced_tables() throws SQLException {
+        try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
+            connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryName = 'Test Country' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.commit();
+
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code = 'NE'").executeQuery()) {
+                assertData(rs, Arrays.asList(
+                        Arrays.asList("NE", "Test Country")
+                ));
+            }
+
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Customer WHERE email = 'danzigism@icloud.com'").executeQuery()) {
+                assertData(rs, Arrays.asList(
+                        Arrays.asList("danzigism@icloud.com", "Tobi", "Tester", "NE")
+                ));
+            }
+        }
+    }
+
+    @Test
+    public void melon_storage_changes_should_update_reference() throws SQLException {
+        try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
+            connection.prepareStatement("UPDATE CustomerWithCountry SET countryCode = 'JP' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.commit();
+
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code IN ('NE', 'JP') ORDER BY code").executeQuery()) {
+                assertData(rs, Arrays.asList(
+                        Arrays.asList("JP", "Japan"),
+                        Arrays.asList("NE", "Niger")
+                ));
+            }
+
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Customer WHERE email = 'danzigism@icloud.com'").executeQuery()) {
+                assertData(rs, Arrays.asList(
+                        Arrays.asList("danzigism@icloud.com", "Tobi", "Tester", "JP")
+                ));
+            }
         }
     }
 }

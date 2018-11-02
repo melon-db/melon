@@ -27,7 +27,6 @@ tables:
         source: firstName
       - name: lastName
       - name: countryCode
-        source: countryCode.code
       - name: countryName
         source: countryCode.name
     storage:

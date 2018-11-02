@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MelonFactory {
-    
+
     public static MelonFactory INSTANCE = new MelonFactory();
 
     private final Map<String, Melon> CREATED_INFOS = new HashMap<>();
@@ -27,7 +27,7 @@ public class MelonFactory {
             CREATED_INFOS.remove(melon.getUrl());
         }
     }
-    
+
     private static SchemaConfig getSchemaConfigFromStream(InputStream stream) {
         Yaml yaml = new Yaml();
         return yaml.loadAs(stream, SchemaConfig.class);
@@ -45,17 +45,8 @@ public class MelonFactory {
             String configFile = getConfigFilePath(properties);
             File file = MelonHelper.getFile(configFile, null);
             SchemaConfig schemaConfig = null;
-            try (InputStream resourceStream = SharpIO.createInputStream(configFile, true)) {
-                if (resourceStream == null) {
-                    try (InputStream fileStream = SharpIO.createInputStream(configFile, false)) {
-                        if (fileStream == null) {
-                            throw new IOException(configFile + " not found");
-                        }
-                        schemaConfig = getSchemaConfigFromStream(fileStream);
-                    }
-                } else {
-                    schemaConfig = getSchemaConfigFromStream(resourceStream);
-                }
+            try (InputStream resourceStream = SharpIO.createInputStream(configFile)) {
+                schemaConfig = getSchemaConfigFromStream(resourceStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -71,5 +62,5 @@ public class MelonFactory {
         melon.setReferenceCounter(melon.getReferenceCounter() + 1);
         return melon;
     }
-    
+
 }

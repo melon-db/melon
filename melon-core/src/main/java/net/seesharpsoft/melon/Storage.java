@@ -23,5 +23,7 @@ public interface Storage extends PropertiesOwner {
      *
      * @return true if storage data has changed since last call of read or write, false if no changes
      */
-    boolean hasChanges() throws IOException;
+    boolean isDirty() throws IOException;
+
+    void isDirty(boolean isDirty);
 }

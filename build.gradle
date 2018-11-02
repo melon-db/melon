@@ -26,9 +26,10 @@ allprojects {
     }
 
     group 'net.seesharpsoft.melon'
-    version = '0.8.0'
+    version = '0.9.0'
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 

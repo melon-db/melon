@@ -15,8 +15,9 @@ public class SqlHelper {
         return name.replaceAll("^[\\d\\W]*", "").replaceAll("\\W", "_").toUpperCase();
     }
 
-    public static String generateInsertStatement(Table table) {
-        StringBuilder builder = new StringBuilder("INSERT INTO ")
+    public static String generateInsertOrMergeStatement(Table table, String insertOrMerge) {
+        StringBuilder builder = new StringBuilder(insertOrMerge)
+                .append(" INTO ")
                 .append(sanitizeDbName(table.getName()))
                 .append(" (");
 
@@ -44,6 +45,14 @@ public class SqlHelper {
         return builder.toString();
     }
 
+    public static String generateMergeStatement(Table table) {
+        return generateInsertOrMergeStatement(table, "MERGE");
+    }
+
+    public static String generateInsertStatement(Table table) {
+        return generateInsertOrMergeStatement(table, "INSERT");
+    }
+
     public static String generateSelectStatement(Table table) {
         StringBuilder builder = new StringBuilder("SELECT ");
 
@@ -66,7 +75,7 @@ public class SqlHelper {
     public static String separateEntitiesBySeparator(List<? extends NamedEntity> values, String separator, boolean sanitize) {
         return SqlHelper.separateNameBySeparator(values.stream().map(namedEntity -> namedEntity.getName()).collect(Collectors.toList()), separator, sanitize);
     }
-    
+
     public static String separateNameBySeparator(List<String> values, String separator, boolean sanitize) {
         int valuesSize = values.size();
         StringBuilder builder = new StringBuilder();
@@ -146,9 +155,17 @@ public class SqlHelper {
         return builder.toString();
     }
 
-    public static String generateClearTableStatement(Table table) {
+    public static String generateClearTableStatement(Table table, List<String> primaryValuesToKeep) {
         StringBuilder builder = new StringBuilder("DELETE FROM ")
                 .append(sanitizeDbName(table.getName()));
+
+        if (primaryValuesToKeep != null && !primaryValuesToKeep.isEmpty()) {
+            builder.append(" WHERE NOT ")
+                    .append((sanitizeDbName(table.getPrimaryColumn().getName())))
+                    .append(" IN (")
+                    .append(separateNameBySeparator(primaryValuesToKeep.stream().map(value -> "?").collect(Collectors.toList()), ",", false))
+                    .append(")");
+        }
 
         return builder.toString();
     }

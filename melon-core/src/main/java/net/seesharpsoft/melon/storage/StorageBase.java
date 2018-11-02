@@ -1,17 +1,17 @@
 package net.seesharpsoft.melon.storage;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.Column;
 import net.seesharpsoft.melon.Storage;
 import net.seesharpsoft.melon.Table;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static net.seesharpsoft.melon.MelonHelper.deepCopyRecords;
 
 public abstract class StorageBase implements Storage {
 
@@ -20,21 +20,16 @@ public abstract class StorageBase implements Storage {
 
     protected final Table table;
 
-    @Setter
-    @Getter
-    private long lastSynced;
+    protected List<List<String>> currentRecords;
 
-    @Setter
-    @Getter
-    private long lastModified;
+    private boolean dirty = false;
 
     public StorageBase(Table table, Properties properties) {
         Objects.requireNonNull(table, "table must not be null!");
         Objects.requireNonNull(properties, "properties must not be null!");
         this.table = table;
         this.properties = properties;
-        this.lastSynced = 0;
-        this.setLastModified(getSyncTime());
+        this.isDirty(true);
     }
 
     protected List<List<String>> validateData(List<List<String>> data, Table table, Properties properties) {
@@ -51,9 +46,12 @@ public abstract class StorageBase implements Storage {
 
     @Override
     public final List<List<String>> read() throws IOException {
-        List<List<String>> result = read(this.table, this.properties);
-        setLastSynced(getSyncTime());
-        return validateData(result, this.table, this.properties);
+        if (isDirty() || currentRecords == null) {
+            List<List<String>> result = read(this.table, this.properties);
+            currentRecords = validateData(result, this.table, this.properties);
+            isDirty(false);
+        }
+        return deepCopyRecords(currentRecords);
     }
 
     @Override
@@ -61,9 +59,11 @@ public abstract class StorageBase implements Storage {
         if (getProperties().getOrDefault(PROPERTY_STORAGE_MODE, STORAGE_MODE_DEFAULT).equals(STORAGE_MODE_READONLY)) {
             return;
         }
-        write(this.table, this.properties, records);
-        long currentTime = getSyncTime();
-        setLastModified(currentTime);
+        List<List<String>> actualRecords = read();
+        if (!actualRecords.equals(records)) {
+            write(this.table, this.properties, records);
+            isDirty(true);
+        }
     }
 
     @Override
@@ -72,12 +72,13 @@ public abstract class StorageBase implements Storage {
     }
 
     @Override
-    public boolean hasChanges() {
-        return getLastSynced() == 0 || getLastModified() > getLastSynced();
+    public boolean isDirty() {
+        return dirty;
     }
 
-    protected long getSyncTime() {
-        return Instant.now().toEpochMilli();
+    @Override
+    public void isDirty(boolean isDirty) {
+        this.dirty = isDirty;
     }
 
     protected abstract List<List<String>> read(Table table, Properties properties) throws IOException;

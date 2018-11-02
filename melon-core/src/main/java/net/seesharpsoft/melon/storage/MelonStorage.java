@@ -109,7 +109,7 @@ public class MelonStorage extends StorageBase {
     }
 
     private List<String> mergeBaseTableRecord(Table table, List<List<String>> baseRecords, List<String> record, List<List<String>> targetRecords) {
-        List<String> primaryValues = new ArrayList<>();
+        String primaryKeyValue = null;
         Map<Integer, Integer> indexMap = new HashMap<>();
         int columnIndex = 0;
         for (Column column : table.getColumns()) {
@@ -117,14 +117,14 @@ public class MelonStorage extends StorageBase {
             if (column.getSource() == null || column.getSource().indexOf('.') == -1) {
                 index = baseTable.indexOf(column.getSource() == null ? column.getName() : column.getSource());
                 if (baseTable.getColumns().get(index).isPrimary()) {
-                    primaryValues.add(record.get(columnIndex));
+                    primaryKeyValue = record.get(columnIndex);
                 }
                 indexMap.put(columnIndex, index);
             }
             ++columnIndex;
         }
 
-        final List<String> baseRecord = baseTable.getRecord(baseRecords, primaryValues.toArray(new String[0]));
+        final List<String> baseRecord = baseTable.getRecord(baseRecords, primaryKeyValue);
         indexMap.forEach((sourceIndex, baseIndex) -> baseRecord.set(baseIndex, record.get(sourceIndex)));
         if (!targetRecords.contains(baseRecord)) {
             targetRecords.add(baseRecord);

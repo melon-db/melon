@@ -21,9 +21,7 @@ tables:
   - name: TeamMembers
     columns:
       - name: teamId
-        primary: true
       - name: userId
-        primary: true
     storage:
       uri: ../data/TeamMembers.csv
       properties:

@@ -1,20 +1,17 @@
 package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.Constants;
 import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.SchemaImpl;
 import net.seesharpsoft.melon.impl.TableImpl;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
-import net.seesharpsoft.melon.jdbc.MelonDriver;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -122,18 +119,14 @@ public class XmlStorageUT extends TestFixture {
 
     @Test
     public void should_connect_to_h2_mem() throws SQLException {
-        java.util.Properties properties = new java.util.Properties();
-        properties.put(Constants.PROPERTY_CONFIG_FILE, "/XmlAttributes.yaml");
-        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+        try (Connection connection = getConnection("/XmlAttributes.yaml")) {
             assertAddressData(connection);
         }
     }
 
     @Test
     public void should_read_country_xml() throws SQLException {
-        java.util.Properties properties = new java.util.Properties();
-        properties.put(Constants.PROPERTY_CONFIG_FILE, "/Country.yaml");
-        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+        try (Connection connection = getConnection("/Country.yaml")) {
             ResultSet resultSet = connection.prepareStatement("SELECT COUNT(*) FROM COUNTRY").executeQuery();
 
             assertThat(resultSet.next(), is(true));
@@ -143,9 +136,7 @@ public class XmlStorageUT extends TestFixture {
 
     @Test
     public void should_insert_into_country_xml() throws SQLException, IOException {
-        java.util.Properties properties = new java.util.Properties();
-        properties.put(Constants.PROPERTY_CONFIG_FILE, "/Country.yaml");
-        try (Connection connection = DriverManager.getConnection(String.format("%sh2:mem:memdb", MelonDriver.MELON_URL_PREFIX), properties)) {
+        try (Connection connection = getConnection("/Country.yaml")) {
             int updatedRows = connection.prepareStatement("INSERT INTO COUNTRY (NAME, CCA2) VALUES ('SUMMERWORLD', 'SW')").executeUpdate();
             assertThat(updatedRows, is(1));
 

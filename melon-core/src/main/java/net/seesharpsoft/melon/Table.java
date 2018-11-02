@@ -40,8 +40,20 @@ public interface Table extends PropertiesOwner, NamedEntity {
         return null;
     }
 
-    default List<Column> getPrimaryColumns() {
-        return getColumns().stream().filter(Column::isPrimary).collect(Collectors.toList());
+    default Column getPrimaryColumn() {
+        List<Column> primaryKeyColumns = getColumns().stream().filter(column -> this.equals(column.getTable()) && column.isPrimary()).collect(Collectors.toList());
+        if(primaryKeyColumns.size() > 1) {
+            throw new UnsupportedOperationException(String.format("not more than one primary key columns allowed! (Table: %s)", this.getName()));
+        }
+        return primaryKeyColumns.isEmpty() ? null : primaryKeyColumns.get(0);
+    }
+
+    default int getPrimaryColumnIndex() {
+        Column primaryColumn = getPrimaryColumn();
+        if (primaryColumn != null) {
+            return indexOf(primaryColumn);
+        }
+        return -1;
     }
 
     default int indexOf(Column column) {
@@ -56,16 +68,25 @@ public interface Table extends PropertiesOwner, NamedEntity {
         return values.get(this.indexOf(column));
     }
 
-    default List<String> getRecord(List<List<String>> values, String... primaryKeys) {
-        List<List<String>> possibleResults = new ArrayList<>(values);
-        int primaryColumnIndex = 0;
-        for (Column primaryColumn : getPrimaryColumns()) {
-            String givenPrimaryKey = primaryKeys[primaryColumnIndex];
-            int index = indexOf(primaryColumn);
-            possibleResults = possibleResults.stream().filter(possibleResult -> givenPrimaryKey.equals(possibleResult.get(index))).collect(Collectors.toList());
-            ++primaryColumnIndex;
+    default List<String> getRecord(List<List<String>> records, String primaryKeyValue) {
+        List<List<String>> possibleResults = new ArrayList<>(records);
+        int primaryKeyColumnIndex = getPrimaryColumnIndex();
+        if(primaryKeyColumnIndex == -1) {
+            throw new UnsupportedOperationException(String.format("primary key column required! (Table: %s)", this.getName()));
         }
+        possibleResults = possibleResults.stream().filter(possibleResult -> primaryKeyValue.equals(possibleResult.get(primaryKeyColumnIndex))).collect(Collectors.toList());
         return possibleResults.isEmpty() ? null : possibleResults.get(0);
+    }
+
+    default List<String> getPrimaryValues(List<List<String>> records) {
+        List<String> result = new ArrayList<>();
+        int primaryKeyColumnIndex = indexOf(getPrimaryColumn());
+        if (primaryKeyColumnIndex != -1) {
+            for (List<String> values : records) {
+                result.add(values.get(primaryKeyColumnIndex));
+            }
+        }
+        return result;
     }
 
     Storage getStorage();

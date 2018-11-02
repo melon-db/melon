@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.sql.*;
 
 public class MelonConnection extends ConnectionWrapper {
-    
+
     @Getter
     protected Melon melon;
 
@@ -17,7 +17,7 @@ public class MelonConnection extends ConnectionWrapper {
         super(connection);
 
         this.melon = melon;
-        melon.syncToDatabase(this);
+        melon.syncToDatabase(this, true);
     }
 
     @Override
@@ -38,14 +38,14 @@ public class MelonConnection extends ConnectionWrapper {
     public synchronized void rollback() throws SQLException {
         super.rollback();
 
-        this.melon.syncToDatabase(this);
+        this.melon.syncToDatabase(this, true);
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         super.rollback(savepoint);
 
-        this.melon.syncToDatabase(this);
+        this.melon.syncToDatabase(this, true);
     }
 
     @Override

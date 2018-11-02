@@ -19,10 +19,8 @@ tables:
   - name: TeamMembers
     columns:
       - name: teamId
-        primary: true
         reference: Team
       - name: userId
-        primary: true
         reference: User
     storage:
       uri: ../data/TeamMembers.csv

@@ -26,7 +26,7 @@ public class Melon {
     @Getter
     @Setter
     private boolean initialized = false;
-    
+
     @Getter
     @Setter
     private int referenceCounter = 0;
@@ -39,8 +39,27 @@ public class Melon {
         this.properties = new Properties(properties);
     }
 
-    protected void clearDatabaseTable(Connection connection, Table table) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(table))) {
+    protected boolean tableExists(Connection connection, Table table) throws SQLException {
+        String dbTableName = SqlHelper.sanitizeDbName(table.getName());
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, dbTableName, null)) {
+            return resultSet.next();
+        }
+    }
+
+//    protected void clearDatabaseTable(Connection connection, Table table) throws SQLException {
+//        clearDatabaseTable(connection, table, Collections.emptyList());
+//    }
+
+    protected void clearDatabaseTable(Connection connection, Table table, List<String> primaryValuesToKeep) throws SQLException {
+        if (!tableExists(connection, table)) {
+            return;
+        }
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(table, primaryValuesToKeep))) {
+            if (primaryValuesToKeep != null) {
+                for (int i = 0; i < primaryValuesToKeep.size(); ++i) {
+                    ps.setObject(i + 1, primaryValuesToKeep.get(i));
+                }
+            }
             ps.execute();
         }
     }
@@ -52,8 +71,8 @@ public class Melon {
     }
 
     protected void syncToDatabase(Connection connection, Table table, List<List<String>> records) throws SQLException {
-        clearDatabaseTable(connection, table);
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateInsertStatement(table))) {
+        clearDatabaseTable(connection, table, table.getPrimaryValues(records));
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateMergeStatement(table))) {
             final int batchSize = 1000;
             int count = 0;
             int columnSize = table.getColumns().size();
@@ -73,7 +92,7 @@ public class Melon {
         connection.commit();
     }
 
-    public void syncToDatabase(Connection connection) throws SQLException {
+    public void syncToDatabase(Connection connection, boolean forceSync) throws SQLException {
         if (melonSyncCounter == 0) {
             try {
                 ++melonSyncCounter;
@@ -85,12 +104,19 @@ public class Melon {
                     if (storage == null) {
                         throw new RuntimeException("no storage for " + table);
                     }
-                    if (storage.hasChanges()) {
-                        syncToDatabase(connection, table, storage.read());
+                    if (storage.isDirty() || forceSync) {
+                        try {
+                            syncToDatabase(connection, table, storage.read());
+                        } catch(SQLException sqlException) {
+                            storage.isDirty(true);
+                        }
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (SQLException sqlException) {
+                setInitialized(false);
+                throw sqlException;
             } finally {
                 --melonSyncCounter;
             }

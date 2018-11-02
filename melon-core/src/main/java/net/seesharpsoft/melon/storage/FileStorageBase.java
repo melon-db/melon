@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
+import net.seesharpsoft.commons.util.FileWatcher;
 import net.seesharpsoft.melon.Table;
 
 import java.io.*;
@@ -11,11 +12,24 @@ import java.util.Objects;
 
 public abstract class FileStorageBase extends StorageBase {
 
+    class StorageWatcher extends FileWatcher {
+        public StorageWatcher(File file) {
+            super(file);
+        }
+
+        @Override
+        public void onModified() {
+            isDirty(true);
+        }
+    }
+
     public static final String PROPERTY_ENCODING = "storage-encoding";
 
     public static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
     protected File file;
+
+    protected FileWatcher fileWatcher;
 
     public FileStorageBase(Table table, Properties properties, File file) throws IOException {
         super(table, properties);
@@ -28,6 +42,8 @@ public abstract class FileStorageBase extends StorageBase {
         if (!file.exists()) {
             file.createNewFile();
         }
+        this.fileWatcher = new StorageWatcher(file);
+        this.fileWatcher.startWatching();
     }
 
     protected Charset getEncoding() {
@@ -49,16 +65,6 @@ public abstract class FileStorageBase extends StorageBase {
 
     protected Writer getWriter(File file) throws FileNotFoundException, UnsupportedEncodingException {
         return new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), getEncoding());
-    }
-
-    @Override
-    public long getLastModified() {
-        return file.lastModified();
-    }
-
-    @Override
-    protected long getSyncTime() {
-        return file == null ? Long.MAX_VALUE : file.lastModified();
     }
 
     protected List<List<String>> read(Table table, Properties properties) throws IOException {
