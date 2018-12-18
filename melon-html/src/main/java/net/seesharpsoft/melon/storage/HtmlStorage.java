@@ -8,11 +8,12 @@ import net.seesharpsoft.melon.Table;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 public class HtmlStorage extends FileStorageBase {
@@ -26,6 +27,9 @@ public class HtmlStorage extends FileStorageBase {
     public static final String PROPERTY_COLUMN_ATTRIBUTES = "html-column-attributes";
     public static final String PROPERTY_RECORD_ATTRIBUTES = "html-record-attributes";
 
+    public static final String PROPERTY_INDENT = "html-indent";
+    public static final int DEFAULT_INDENT = 4; // max: 32
+
     public HtmlStorage(Table table, Properties properties, File file) throws IOException {
         super(table, properties, file);
     }
@@ -36,6 +40,10 @@ public class HtmlStorage extends FileStorageBase {
 
     protected String getHeader() {
         return getProperties().getOrDefault(PROPERTY_HEAD_CONTENT, null);
+    }
+
+    protected int getIndent() {
+        return getProperties().getOrDefault(PROPERTY_INDENT, DEFAULT_INDENT);
     }
 
     protected  List<List<String>> readDivFormat(Document htmlDocument, Table table) {
@@ -97,6 +105,11 @@ public class HtmlStorage extends FileStorageBase {
     @Override
     protected void write(File file, Table table, Properties properties, List<List<String>> records) throws IOException {
         Document htmlDocument = Jsoup.parse(file, getEncoding().name());
+        htmlDocument.outputSettings(htmlDocument.outputSettings()
+                .syntax(Document.OutputSettings.Syntax.html)
+                .escapeMode(Entities.EscapeMode.base)
+                .prettyPrint(true)
+                .indentAmount(getIndent()));
         htmlDocument.body().empty();
         String header = getHeader();
         if (header != null) {
@@ -113,7 +126,7 @@ public class HtmlStorage extends FileStorageBase {
                 throw new NotImplementedException();
         }
 
-        try (FileWriter fileWriter = new FileWriter(file)) {
+        try (Writer fileWriter = getWriter(file)) {
             fileWriter.write(htmlDocument.outerHtml());
             fileWriter.flush();
         }

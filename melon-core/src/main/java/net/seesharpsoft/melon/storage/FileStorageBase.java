@@ -51,19 +51,19 @@ public abstract class FileStorageBase extends StorageBase {
         return charsetName == null ? DEFAULT_ENCODING : Charset.forName(charsetName);
     }
 
-    protected Reader getReader() throws FileNotFoundException, UnsupportedEncodingException {
+    protected Reader getReader() throws FileNotFoundException {
         return getReader(this.file);
     }
 
-    protected Reader getReader(File file) throws FileNotFoundException, UnsupportedEncodingException {
+    protected Reader getReader(File file) throws FileNotFoundException {
         return new InputStreamReader(new FileInputStream(file.getAbsolutePath()), getEncoding());
     }
 
-    protected Writer getWriter() throws FileNotFoundException, UnsupportedEncodingException {
+    protected Writer getWriter() throws FileNotFoundException {
         return getWriter(this.file);
     }
 
-    protected Writer getWriter(File file) throws FileNotFoundException, UnsupportedEncodingException {
+    protected Writer getWriter(File file) throws FileNotFoundException {
         return new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), getEncoding());
     }
 
