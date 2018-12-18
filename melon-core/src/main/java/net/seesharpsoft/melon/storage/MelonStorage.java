@@ -46,15 +46,16 @@ public class MelonStorage extends StorageBase {
             for (Column column : table.getColumns()) {
                 List<String> sourceRecord = record;
                 int index = -1;
-                if (column.getSource() == null || column.getSource().indexOf('.') == -1) {
+                int separatorIndex = column.getSource() == null ? -1 : column.getSource().indexOf('.');
+                if (separatorIndex == -1) {
                     index = baseTable.indexOf(column.getSource() == null ? column.getName() : column.getSource());
                 } else {
-                    String baseTableColumnName = column.getSource().substring(0, column.getSource().indexOf('.'));
+                    String baseTableColumnName = column.getSource().substring(0, separatorIndex);
                     Column baseTableColumn = this.baseTable.getColumn(baseTableColumnName);
                     Table sourceTable = baseTableColumn.getReference();
                     List<List<String>> currentValues = getValues(sourceTable, tableMap);
                     sourceRecord = sourceTable.getRecord(currentValues, baseTable.getValue(sourceRecord, baseTableColumn));
-                    index = sourceTable.indexOf(column.getSource());
+                    index = sourceTable.indexOf(column.getSource().substring(separatorIndex + 1));
                 }
                 if (sourceRecord == null) {
                     currentRecord.add(null);
@@ -90,8 +91,9 @@ public class MelonStorage extends StorageBase {
         int columnIndex = 0;
         for (Column column : table.getColumns()) {
             int index = -1;
-            if (column.getSource() != null && column.getSource().indexOf('.') != -1) {
-                String baseTableColumnName = column.getSource().substring(0, column.getSource().indexOf('.'));
+            int separatorIndex = column.getSource() == null ? -1 : column.getSource().indexOf('.');
+            if (separatorIndex != -1) {
+                String baseTableColumnName = column.getSource().substring(0, separatorIndex);
                 Column baseTableColumn = this.baseTable.getColumn(baseTableColumnName);
                 Table sourceTable = baseTableColumn.getReference();
                 List<List<String>> currentValues = getValues(sourceTable, tableMap);
@@ -101,7 +103,7 @@ public class MelonStorage extends StorageBase {
                     continue;
                 }
 
-                index = sourceTable.indexOf(column.getSource());
+                index = sourceTable.indexOf(column.getSource().substring(separatorIndex + 1));
                 sourceRecord.set(index, record.get(columnIndex));
             }
             ++columnIndex;
