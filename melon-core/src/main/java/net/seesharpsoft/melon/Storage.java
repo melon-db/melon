@@ -8,9 +8,10 @@ import java.util.List;
 public interface Storage extends PropertiesOwner {
 
     String PROPERTY_STORAGE_MODE = "storage-mode";
-
     String STORAGE_MODE_DEFAULT = "Default";
     String STORAGE_MODE_READONLY = "ReadOnly";
+
+    String PROPERTY_STORAGE_RECORD_ORDER = "storage-order";
 
     List<List<String>> read() throws IOException;
 

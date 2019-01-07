@@ -69,6 +69,12 @@ public class SqlHelper {
 
         builder.append(" FROM ").append(sanitizeDbName(table.getName()));
 
+        String order = table.getStorage().getProperties().get(Storage.PROPERTY_STORAGE_RECORD_ORDER);
+        if (order != null && !order.isEmpty()) {
+            builder.append(" ORDER BY ")
+                    .append(order);
+        }
+
         return builder.toString();
     }
 
