@@ -3,7 +3,6 @@ package net.seesharpsoft.melon.jdbc;
 import net.seesharpsoft.melon.test.TestFixture;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class MoviesUT extends TestFixture {
@@ -20,10 +19,8 @@ public class MoviesUT extends TestFixture {
     @Test
     public void should_insert_new_entry_in_empty_file() throws SQLException {
         try (MelonConnection connection = getConnection("/schemas/Movies.yaml")) {
-
             connection.prepareStatement("INSERT INTO Movie (NAME) VALUES ('Test')").execute();
             connection.commit();
-
         }
     }
 

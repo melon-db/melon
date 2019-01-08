@@ -126,11 +126,12 @@ public class MelonStorage extends StorageBase {
             ++columnIndex;
         }
 
-        final List<String> baseRecord = baseTable.getRecord(baseRecords, primaryKeyValue);
-        indexMap.forEach((sourceIndex, baseIndex) -> baseRecord.set(baseIndex, record.get(sourceIndex)));
-        if (!targetRecords.contains(baseRecord)) {
-            targetRecords.add(baseRecord);
+        List<String> baseRecord = baseTable.getRecord(baseRecords, primaryKeyValue);
+        final List<String> actualRecord = baseRecord == null ? baseTable.createRecord() : baseRecord;
+        indexMap.forEach((sourceIndex, baseIndex) -> actualRecord.set(baseIndex, record.get(sourceIndex)));
+        if (!targetRecords.contains(actualRecord)) {
+            targetRecords.add(actualRecord);
         }
-        return baseRecord;
+        return actualRecord;
     }
 }

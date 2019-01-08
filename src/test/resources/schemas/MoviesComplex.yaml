@@ -1,0 +1,44 @@
+name: MoviesComplex
+tables:
+  - name: Country
+    columns:
+      - name: code
+        primary: true
+      - name: name
+    storage:
+      uri: ../data/countries.properties
+  - name: Movie
+    columns:
+      - name: Identifier
+        primary: true
+      - name: Year
+      - name: CountryCode
+        reference: Country
+    storage:
+      uri: movies.xml
+  - name: Movie_en
+    columns:
+      - name: Identifier
+        primary: true
+        reference: Movie
+      - name: Name
+    storage:
+      uri: movies_en.properties
+  - name: Movie_de
+    columns:
+      - name: Identifier
+        primary: true
+        reference: Movie
+      - name: Name
+    storage:
+      uri: movies_de.properties
+  - name: Movie_Full
+    columns:
+      - name: Identifier
+        primary: true
+      - name: Year
+      - name: CountryCode
+      - name: CountryName
+        source: CountryCode.name
+    storage:
+      uri: melon:///Movie

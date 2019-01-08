@@ -2,7 +2,6 @@ package net.seesharpsoft.melon.test;
 
 import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.Constants;
-import net.seesharpsoft.melon.MelonHelper;
 import net.seesharpsoft.melon.jdbc.MelonConnection;
 import net.seesharpsoft.melon.jdbc.MelonDriver;
 import org.junit.After;
@@ -13,17 +12,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 public abstract class TestFixture {
-    
+
     public abstract String[] getResourceFiles();
 
     public static void createBackupFiles(String[] fileNames) throws IOException {
         for (String fileName : fileNames) {
-            File testFile = MelonHelper.getFile(fileName);
+            File testFile = SharpIO.getFile(fileName);
             if (!testFile.exists()) {
                 continue;
             }
@@ -40,12 +37,10 @@ public abstract class TestFixture {
 
     public static void restoreBackupFiles(String[] fileNames) throws IOException {
         for (String fileName : fileNames) {
-            File file = MelonHelper.getFile(fileName);
-            File backupFile = MelonHelper.getFile(fileName + "_BACKUP");
+            File file = SharpIO.getFile(fileName);
+            File backupFile = SharpIO.getFile(fileName + "_BACKUP");
+            file.delete();
             if (!backupFile.exists()) {
-                if (file.exists()) {
-                    file.delete();
-                }
                 continue;
             }
             try(FileWriter writer = new FileWriter(file)) {
@@ -61,7 +56,7 @@ public abstract class TestFixture {
         info.put("AUTOCOMMIT", "false");
         return (MelonConnection) DriverManager.getConnection(String.format("%sh2:mem:%s", MelonDriver.MELON_URL_PREFIX, "test"), info);
     }
-    
+
     @Before
     public void beforeEach() throws IOException {
         createBackupFiles(getResourceFiles());

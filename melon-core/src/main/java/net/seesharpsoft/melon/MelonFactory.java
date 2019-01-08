@@ -43,7 +43,7 @@ public class MelonFactory {
 
         if (melon == null) {
             String configFile = getConfigFilePath(properties);
-            File file = MelonHelper.getFile(configFile, null);
+            File file = SharpIO.getFile(configFile);
             SchemaConfig schemaConfig = null;
             try (InputStream resourceStream = SharpIO.createInputStream(configFile)) {
                 schemaConfig = getSchemaConfigFromStream(resourceStream);

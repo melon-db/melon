@@ -1,7 +1,5 @@
 package net.seesharpsoft.melon;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,22 +41,6 @@ public class MelonHelper {
             return null;
         }
         return propertyValue.substring(startIndex + 1, propertyValue.length() - 1);
-    }
-
-    public static File getFile(String fileName) {
-        return getFile(fileName, null);
-    }
-
-    public static File getFile(String fileName, String reference) {
-        String path = fileName;
-        if (reference != null && !fileName.startsWith("/") && !fileName.startsWith("\\")) {
-            path = reference + "/" + fileName;
-        }
-        URL url = MelonHelper.class.getResource(path);
-        if (url == null) {
-            return new File(path);
-        }
-        return new File(url.getFile());
     }
 
     public static List<List<String>> deepCopyRecords(List<List<String>> records) {

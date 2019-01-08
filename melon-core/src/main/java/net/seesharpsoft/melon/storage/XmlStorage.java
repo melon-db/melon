@@ -65,7 +65,11 @@ public class XmlStorage extends FileStorageBase {
             XMLInputFactory xmlInFact = XMLInputFactory.newInstance();
             XMLStreamReader reader = xmlInFact.createXMLStreamReader(fis, getEncoding().name());
             while (reader.hasNext()) {
-                reader.next(); // do something here
+                try {
+                    reader.next(); // do something here
+                } catch(Exception exc) {
+                    break;
+                }
 
                 if (readValue) {
                     readValue = false;

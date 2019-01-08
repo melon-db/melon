@@ -89,5 +89,12 @@ public interface Table extends PropertiesOwner, NamedEntity {
         return result;
     }
 
+    default List<String> createRecord() {
+        List columns = getColumns();
+        final List<String> record = new ArrayList<>(columns.size());
+        columns.forEach(column -> record.add(null));
+        return record;
+    }
+
     Storage getStorage();
 }

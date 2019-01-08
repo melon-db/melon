@@ -1,7 +1,7 @@
 package net.seesharpsoft.melon.storage;
 
 import net.seesharpsoft.commons.collection.Properties;
-import net.seesharpsoft.melon.MelonHelper;
+import net.seesharpsoft.commons.util.SharpIO;
 import net.seesharpsoft.melon.Schema;
 import net.seesharpsoft.melon.impl.ColumnImpl;
 import net.seesharpsoft.melon.impl.SchemaImpl;
@@ -60,7 +60,7 @@ public class XmlStorageUT extends TestFixture {
         table.addColumn(column);
         Properties properties = new Properties();
         properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
-        XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/data/Address.xml"));
+        XmlStorage storage = new XmlStorage(table, properties, SharpIO.getFile("/data/Address.xml"));
 
         List<List<String>> data = storage.read();
 
@@ -79,13 +79,13 @@ public class XmlStorageUT extends TestFixture {
         table.addColumn(column);
         Properties properties = new Properties();
         properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
-        XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/files/Address_New.xml"));
+        XmlStorage storage = new XmlStorage(table, properties, SharpIO.getFile("/files/Address_New.xml"));
 
-        List<List<String>> data = storage.read(MelonHelper.getFile("/data/Address.xml"), table, properties);
+        List<List<String>> data = storage.read(SharpIO.getFile("/data/Address.xml"), table, properties);
 
-        storage.write(MelonHelper.getFile("/files/Address_New.xml"), table, properties, data);
+        storage.write(SharpIO.getFile("/files/Address_New.xml"), table, properties, data);
 
-        data = storage.read(MelonHelper.getFile("/files/Address_New.xml"), table, properties);
+        data = storage.read(SharpIO.getFile("/files/Address_New.xml"), table, properties);
 
         assertThat(data.size(), is(2));
     }
@@ -104,14 +104,14 @@ public class XmlStorageUT extends TestFixture {
         table.addColumn(column);
         Properties properties = new Properties();
         properties.put(XmlStorage.PROPERTY_ROOT_PATH, "/address/data_record");
-        XmlStorage storage = new XmlStorage(table, properties, MelonHelper.getFile("/files/Address_Test.xml"));
+        XmlStorage storage = new XmlStorage(table, properties, SharpIO.getFile("/files/Address_Test.xml"));
 
-        List<List<String>> data = storage.read(MelonHelper.getFile("/files/Address_Test.xml"), table, properties);
+        List<List<String>> data = storage.read(SharpIO.getFile("/files/Address_Test.xml"), table, properties);
         assertThat(data.size(), is(2));
 
-        storage.write(MelonHelper.getFile("/files/Address_Test.xml"), table, properties, data);
+        storage.write(SharpIO.getFile("/files/Address_Test.xml"), table, properties, data);
 
-        List<List<String>> newData = storage.read(MelonHelper.getFile("/files/Address_Test.xml"), table, properties);
+        List<List<String>> newData = storage.read(SharpIO.getFile("/files/Address_Test.xml"), table, properties);
 
         assertThat(newData.size(), is(2));
         assertThat(newData, is(data));

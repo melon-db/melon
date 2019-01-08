@@ -1,6 +1,7 @@
 package net.seesharpsoft.melon;
 
 import net.seesharpsoft.commons.collection.Properties;
+import net.seesharpsoft.commons.util.SharpIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +53,6 @@ public class StorageFactory {
             String tableName = uri.substring(lastSlashIndex + 1);
             return table.getSchema().getTable(tableName);
         }
-        return MelonHelper.getFile(uri, ((File) properties.get(Constants.PROPERTY_CONFIG_FILE)).getParentFile().getAbsolutePath());
+        return SharpIO.getFile(uri, ((File) properties.get(Constants.PROPERTY_CONFIG_FILE)).getParentFile().getAbsolutePath());
     }
 }
