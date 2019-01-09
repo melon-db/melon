@@ -19,22 +19,9 @@ public interface Table extends PropertiesOwner, NamedEntity {
 
     default Column getColumn(String name) {
         Objects.requireNonNull(name, "name must not be null!");
-
-        String[] names = name.split("\\.");
-
-        Table table = this;
-
-        for (int currentNameIndex = 0; currentNameIndex < names.length; ++currentNameIndex) {
-            String currentName = names[currentNameIndex];
-            for (Column column : table.getColumns()) {
-                if (currentName.equalsIgnoreCase(column.getName())) {
-                    if (currentNameIndex < names.length - 1) {
-                        table = column.getReference();
-                        Objects.requireNonNull(table, String.format("reference not found for '%s'", name));
-                        break;
-                    }
-                    return column;
-                }
+        for (Column column : getColumns()) {
+            if (name.equalsIgnoreCase(column.getName())) {
+                return column;
             }
         }
         return null;
@@ -69,6 +56,10 @@ public interface Table extends PropertiesOwner, NamedEntity {
     }
 
     default List<String> getRecord(List<List<String>> records, String primaryKeyValue) {
+        if (primaryKeyValue == null) {
+            return null;
+        }
+
         List<List<String>> possibleResults = new ArrayList<>(records);
         int primaryKeyColumnIndex = getPrimaryColumnIndex();
         if(primaryKeyColumnIndex == -1) {

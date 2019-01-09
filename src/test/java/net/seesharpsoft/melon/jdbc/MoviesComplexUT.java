@@ -36,4 +36,20 @@ public class MoviesComplexUT extends TestFixture {
         }
     }
 
+
+    @Test
+    public void should_insert_new_entry_in_empty_file_and_update_referenced_values() throws SQLException, IOException {
+        try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
+            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, COUNTRYCODE) VALUES ('Test', 'AD')").execute();
+            connection.commit();
+
+            Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();
+            List<List<String>> records = storage.read();
+
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(2), is("AD"));
+            assertThat(records.get(0).get(3), is("Andorra"));
+        }
+    }
+
 }

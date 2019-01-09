@@ -110,7 +110,7 @@ public class MelonStorageUT extends TestFixture {
     @Test
     public void melon_storage_changes_should_update_reference() throws SQLException {
         try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
-            connection.prepareStatement("UPDATE CustomerWithCountry SET countryCode = 'JP' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryCode = 'JP' WHERE email = 'danzigism@icloud.com'").execute();
             connection.commit();
 
             try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code IN ('NE', 'JP') ORDER BY code").executeQuery()) {

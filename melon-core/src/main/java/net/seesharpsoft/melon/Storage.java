@@ -17,8 +17,6 @@ public interface Storage extends PropertiesOwner {
 
     void write(List<List<String>> records) throws IOException;
 
-    Column getColumn(String name);
-
     /**
      * Returns whether the storage-data has changed since last call of read or write.
      *

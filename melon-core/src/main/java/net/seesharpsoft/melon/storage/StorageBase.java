@@ -67,11 +67,6 @@ public abstract class StorageBase implements Storage {
     }
 
     @Override
-    public Column getColumn(String name) {
-        return this.table.getColumn(name);
-    }
-
-    @Override
     public boolean isDirty() {
         return dirty;
     }
