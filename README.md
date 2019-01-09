@@ -15,6 +15,11 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.9.0
+
+- MelonStorage: enables editing data across several files within one table
+- FileWatcher for better data sync
+
 ### v0.6.0
 
 - XML supports values as attributes
