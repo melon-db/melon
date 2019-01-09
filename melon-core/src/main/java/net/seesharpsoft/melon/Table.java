@@ -80,6 +80,18 @@ public interface Table extends PropertiesOwner, NamedEntity {
         return result;
     }
 
+    default List<Column> getReferenceColumns(Table targetTable) {
+        List<Column> referenceColumns = new ArrayList<>();
+        for (Column column : getColumns()) {
+            if (column.getReference() != null) {
+                if (targetTable == null || targetTable.equals(column.getReference())) {
+                    referenceColumns.add(column);
+                }
+            }
+        }
+        return referenceColumns;
+    }
+
     default List<String> createRecord() {
         List columns = getColumns();
         final List<String> record = new ArrayList<>(columns.size());

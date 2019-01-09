@@ -83,19 +83,19 @@ public class MelonStorageUT extends TestFixture {
 
             storage = connection.getMelon().getSchema().getTable("Country").getStorage();
             records = storage.read();
-            assertThat(records.stream().filter(record -> record.get(0).equals("NE")).findFirst().orElse(null), is(Arrays.asList("NE", "Test Country")));
+            assertThat(records.stream().filter(record -> record.get(0).equals("NE")).findFirst().orElse(null), is(Arrays.asList("NE", "Niger")));
         }
     }
 
     @Test
-    public void melon_storage_changes_should_update_referenced_tables() throws SQLException {
+    public void melon_storage_changes_should_not_update_referenced_tables() throws SQLException {
         try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
             connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryName = 'Test Country' WHERE email = 'danzigism@icloud.com'").execute();
             connection.commit();
 
             try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code = 'NE'").executeQuery()) {
                 assertData(rs, Arrays.asList(
-                        Arrays.asList("NE", "Test Country")
+                        Arrays.asList("NE", "Niger")
                 ));
             }
 

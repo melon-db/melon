@@ -53,21 +53,48 @@ public class MelonStorage extends StorageBase {
         return values;
     }
 
-    protected TableValue getTableValue(Map<Table, List<List<String>>> tableMap, List<String> record, String baseTableColumnName) throws IOException {
-        String[] names = baseTableColumnName.split("\\.");
-
+    protected TableValue getTableValue(Map<Table, List<List<String>>> tableMap, List<String> record, String tableColumnName) throws IOException {
         Table currentTable = this.baseTable;
         List<String> currentRecord = record;
+        String currentColumnName = tableColumnName;
         int currentIndex = -1;
 
+        int separatorIndex = tableColumnName.indexOf('@');
+        if (separatorIndex != -1) {
+            currentColumnName = tableColumnName.substring(0, separatorIndex);
+            Table referencingTable = this.baseTable.getSchema().getTable(tableColumnName.substring(separatorIndex + 1));
+            List<Column> referenceColumns = referencingTable.getReferenceColumns(this.baseTable);
+            if (referenceColumns.size() != 1) {
+                throw new UnsupportedOperationException(String.format("exactly one reference column expected in table '%s' to table '%s', but found %s", referencingTable, this.baseTable, referenceColumns.size()));
+            }
+            Column referencingColumn = referenceColumns.get(0);
+            String primaryKey = record.get(this.baseTable.getPrimaryColumnIndex());
+            List<List<String>> referencingTableRecords = getValues(referencingTable, tableMap);
+            List<String> referencingRecord = referencingTableRecords
+                    .stream()
+                    .filter(targetTableRecord -> primaryKey.equals(referencingTable.getValue(targetTableRecord, referencingColumn)))
+                    .findFirst().orElse(null);
+
+            if (referencingRecord == null) {
+                referencingRecord = referencingTable.createRecord();
+                referencingRecord.set(referencingTable.indexOf(referencingColumn), primaryKey);
+                referencingTableRecords.add(referencingRecord);
+            }
+
+            currentTable = referencingTable;
+            currentRecord = referencingRecord;
+        }
+
+        String[] names = currentColumnName.split("\\.");
+
         for (int currentNameIndex = 0; currentNameIndex < names.length; ++currentNameIndex) {
-            String currentName = names[currentNameIndex];
+            currentColumnName = names[currentNameIndex];
             for (Column column : currentTable.getColumns()) {
-                if (currentName.equalsIgnoreCase(column.getName())) {
+                if (currentColumnName.equalsIgnoreCase(column.getName())) {
                     currentIndex = currentTable.indexOf(column);
                     if (currentNameIndex < names.length - 1) {
                         currentTable = column.getReference();
-                        Objects.requireNonNull(currentTable, String.format("reference not found for '%s'", currentName));
+                        Objects.requireNonNull(currentTable, String.format("reference not found for '%s'", currentColumnName));
                         if (currentRecord != null) {
                             currentRecord = currentTable.getRecord(getValues(currentTable, tableMap), currentRecord.get(currentIndex));
                         }
@@ -90,14 +117,12 @@ public class MelonStorage extends StorageBase {
             List<String> currentRecord = new ArrayList<>();
             for (Column column : table.getColumns()) {
                 List<String> sourceRecord = record;
-                int index;
                 TableValue tableValue = getTableValue(tableMap, sourceRecord, column.getSource() == null ? column.getName() : column.getSource());
                 sourceRecord = tableValue.getRecord();
-                index = tableValue.getColumnIndex();
                 if (sourceRecord == null) {
                     currentRecord.add(null);
                 } else {
-                    currentRecord.add(sourceRecord.get(index));
+                    currentRecord.add(sourceRecord.get(tableValue.getColumnIndex()));
                 }
             }
             targetRecords.add(currentRecord);
@@ -113,8 +138,8 @@ public class MelonStorage extends StorageBase {
         List<List<String>> targetRecords = new ArrayList<>();
 
         for (List<String> record : records) {
-            final Map.Entry<List<String>, List<String>> actualRecordAndOriginal = mergeBaseTableRecord(table, baseRecords, record, targetRecords);
-            mergeReferenceRecord(table, actualRecordAndOriginal.getValue() == null ? actualRecordAndOriginal.getKey() : actualRecordAndOriginal.getValue(), record, tableMap);
+            final List<String> actualRecord = mergeBaseTableRecord(table, baseRecords, record, targetRecords);
+            mergeReferenceRecord(table, actualRecord, record, tableMap);
         }
 
         for (Map.Entry<Table, List<List<String>>> entry : tableMap.entrySet()) {
@@ -127,28 +152,26 @@ public class MelonStorage extends StorageBase {
     private void mergeReferenceRecord(Table table, List<String> baseRecord, List<String> record, Map<Table, List<List<String>>> tableMap) throws IOException {
         int columnIndex = 0;
         for (Column column : table.getColumns()) {
-            int separatorIndex = column.getSource() == null ? -1 : column.getSource().indexOf('.');
+            int separatorIndex = column.getSource() == null ? -1 : column.getSource().indexOf('@');
             if (separatorIndex != -1) {
-                TableValue tableValue = getTableValue(tableMap, baseRecord, column.getSource());
+                TableValue tableValue = getTableValue(tableMap, record, column.getSource());
                 List<String> sourceRecord = tableValue.getRecord();
-
                 if (sourceRecord == null) {
                     continue;
                 }
-
                 sourceRecord.set(tableValue.getColumnIndex(), record.get(columnIndex));
             }
             ++columnIndex;
         }
     }
 
-    private Map.Entry<List<String>, List<String>> mergeBaseTableRecord(Table table, List<List<String>> baseRecords, List<String> record, List<List<String>> targetRecords) {
+    private List<String> mergeBaseTableRecord(Table table, List<List<String>> baseRecords, List<String> record, List<List<String>> targetRecords) {
         String primaryKeyValue = null;
         Map<Integer, Integer> indexMap = new HashMap<>();
         int columnIndex = 0;
         for (Column column : table.getColumns()) {
             int index;
-            if (column.getSource() == null || column.getSource().indexOf('.') == -1) {
+            if (column.getSource() == null || (column.getSource().indexOf('@') == -1 && column.getSource().indexOf('.') == -1)) {
                 index = baseTable.indexOf(column.getSource() == null ? column.getName() : column.getSource());
                 if (baseTable.getColumns().get(index).isPrimary()) {
                     primaryKeyValue = record.get(columnIndex);
@@ -159,12 +182,11 @@ public class MelonStorage extends StorageBase {
         }
 
         List<String> baseRecord = baseTable.getRecord(baseRecords, primaryKeyValue);
-        List<String> originalValues = baseRecord == null ? null : new ArrayList<>(baseRecord);
         final List<String> actualRecord = baseRecord == null ? baseTable.createRecord() : baseRecord;
         indexMap.forEach((sourceIndex, baseIndex) -> actualRecord.set(baseIndex, record.get(sourceIndex)));
         if (!targetRecords.contains(actualRecord)) {
             targetRecords.add(actualRecord);
         }
-        return new AbstractMap.SimpleImmutableEntry<>(actualRecord, originalValues);
+        return actualRecord;
     }
 }

@@ -36,9 +36,8 @@ public class MoviesComplexUT extends TestFixture {
         }
     }
 
-
     @Test
-    public void should_insert_new_entry_in_empty_file_and_update_referenced_values() throws SQLException, IOException {
+    public void should_insert_new_entry_in_empty_file_with_reference_value() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
             connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, COUNTRYCODE) VALUES ('Test', 'AD')").execute();
             connection.commit();
@@ -52,4 +51,53 @@ public class MoviesComplexUT extends TestFixture {
         }
     }
 
+
+    @Test
+    public void should_insert_new_entry_in_empty_file_and_create_reference_value() throws SQLException, IOException {
+        try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
+            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, NAME_EN) VALUES ('Test', 'Test English')").execute();
+            connection.commit();
+
+            Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();
+            List<List<String>> records = storage.read();
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(4), is("Test English"));
+
+            storage = connection.melon.getSchema().getTable("Movie_en").getStorage();
+            records = storage.read();
+
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(0), is("Test"));
+            assertThat(records.get(0).get(1), is("Test English"));
+        }
+    }
+
+    @Test
+    public void should_update_new_entry_in_empty_file_and_create_reference_value() throws SQLException, IOException {
+        try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
+            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, NAME_EN) VALUES ('Test', 'Test English')").execute();
+            connection.commit();
+
+            connection.prepareStatement("UPDATE Movie_Full SET NAME_EN = 'Test English Updated', NAME_DE = 'Test German' WHERE IDENTIFIER = 'Test'").execute();
+            connection.commit();
+
+            Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();
+            List<List<String>> records = storage.read();
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(4), is("Test English Updated"));
+            assertThat(records.get(0).get(5), is("Test German"));
+
+            storage = connection.melon.getSchema().getTable("Movie_en").getStorage();
+            records = storage.read();
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(0), is("Test"));
+            assertThat(records.get(0).get(1), is("Test English Updated"));
+
+            storage = connection.melon.getSchema().getTable("Movie_de").getStorage();
+            records = storage.read();
+            assertThat(records.size(), is(1));
+            assertThat(records.get(0).get(0), is("Test"));
+            assertThat(records.get(0).get(1), is("Test German"));
+        }
+    }
 }
