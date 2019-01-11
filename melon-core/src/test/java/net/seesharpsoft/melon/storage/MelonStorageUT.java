@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class MelonStorageUT extends TestFixture {
 
     public static void assertData(Connection connection) throws SQLException {
-        try(ResultSet rs = connection.prepareStatement("SELECT * FROM CustomerWithCountry ORDER BY email").executeQuery()) {
+        try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"CustomerWithCountry\" ORDER BY \"email\"").executeQuery()) {
             rs.next();
             assertThat(rs.getString("email"), is("arandal@att.net"));
             assertThat(rs.getString("fName"), is("Arandal"));
@@ -74,7 +74,7 @@ public class MelonStorageUT extends TestFixture {
     @Test
     public void melon_storage_changes_should_be_stored() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
-            connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryName = 'Test Country' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.prepareStatement("UPDATE \"CustomerWithCountry\" SET \"fName\" = 'Tobi', \"lastName\" = 'Tester', \"countryName\" = 'Test Country' WHERE \"email\" = 'danzigism@icloud.com'").execute();
             connection.commit();
 
             Storage storage = connection.getMelon().getSchema().getTable("Customer").getStorage();
@@ -90,16 +90,16 @@ public class MelonStorageUT extends TestFixture {
     @Test
     public void melon_storage_changes_should_not_update_referenced_tables() throws SQLException {
         try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
-            connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryName = 'Test Country' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.prepareStatement("UPDATE \"CustomerWithCountry\" SET \"fName\" = 'Tobi', \"lastName\" = 'Tester', \"countryName\" = 'Test Country' WHERE \"email\" = 'danzigism@icloud.com'").execute();
             connection.commit();
 
-            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code = 'NE'").executeQuery()) {
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"Country\" WHERE \"code\" = 'NE'").executeQuery()) {
                 assertData(rs, Arrays.asList(
                         Arrays.asList("NE", "Niger")
                 ));
             }
 
-            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Customer WHERE email = 'danzigism@icloud.com'").executeQuery()) {
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"Customer\" WHERE \"email\" = 'danzigism@icloud.com'").executeQuery()) {
                 assertData(rs, Arrays.asList(
                         Arrays.asList("danzigism@icloud.com", "Tobi", "Tester", "NE")
                 ));
@@ -110,17 +110,17 @@ public class MelonStorageUT extends TestFixture {
     @Test
     public void melon_storage_changes_should_update_reference() throws SQLException {
         try (MelonConnection connection = getConnection("/melonstorage/config.yaml")) {
-            connection.prepareStatement("UPDATE CustomerWithCountry SET fname = 'Tobi', lastName = 'Tester', countryCode = 'JP' WHERE email = 'danzigism@icloud.com'").execute();
+            connection.prepareStatement("UPDATE \"CustomerWithCountry\" SET \"fName\" = 'Tobi', \"lastName\" = 'Tester', \"countryCode\" = 'JP' WHERE \"email\" = 'danzigism@icloud.com'").execute();
             connection.commit();
 
-            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Country WHERE code IN ('NE', 'JP') ORDER BY code").executeQuery()) {
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"Country\" WHERE \"code\" IN ('NE', 'JP') ORDER BY \"code\"").executeQuery()) {
                 assertData(rs, Arrays.asList(
                         Arrays.asList("JP", "Japan"),
                         Arrays.asList("NE", "Niger")
                 ));
             }
 
-            try(ResultSet rs = connection.prepareStatement("SELECT * FROM Customer WHERE email = 'danzigism@icloud.com'").executeQuery()) {
+            try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"Customer\" WHERE \"email\" = 'danzigism@icloud.com'").executeQuery()) {
                 assertData(rs, Arrays.asList(
                         Arrays.asList("danzigism@icloud.com", "Tobi", "Tester", "JP")
                 ));

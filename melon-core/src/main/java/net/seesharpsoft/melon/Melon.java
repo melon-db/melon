@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.sql.SqlHelper;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -39,22 +41,17 @@ public class Melon {
         this.properties = new Properties(properties);
     }
 
-    protected boolean tableExists(Connection connection, Table table) throws SQLException {
-        String dbTableName = SqlHelper.sanitizeDbName(table.getName());
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, dbTableName, null)) {
-            return resultSet.next();
+    protected boolean tableExists(Connection connection, Table table) {
+        try (DSLContext context = DSL.using(connection)) {
+            return !context.meta().getTables(table.getName()).isEmpty();
         }
     }
-
-//    protected void clearDatabaseTable(Connection connection, Table table) throws SQLException {
-//        clearDatabaseTable(connection, table, Collections.emptyList());
-//    }
 
     protected void clearDatabaseTable(Connection connection, Table table, List<String> primaryValuesToKeep) throws SQLException {
         if (!tableExists(connection, table)) {
             return;
         }
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(table, primaryValuesToKeep))) {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateClearTableStatement(connection, table, primaryValuesToKeep))) {
             if (primaryValuesToKeep != null) {
                 for (int i = 0; i < primaryValuesToKeep.size(); ++i) {
                     ps.setObject(i + 1, primaryValuesToKeep.get(i));
@@ -64,15 +61,19 @@ public class Melon {
         }
     }
 
-    protected void createSchema(Connection connection) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateSchemaStatement(getSchema()))) {
+    protected void createAndSetSchema(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateSchemaStatement(connection, getSchema()))) {
+            ps.execute();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateSetSchemaStatement(connection, getSchema()))) {
             ps.execute();
         }
     }
 
     protected void syncToDatabase(Connection connection, Table table, List<List<String>> records) throws SQLException {
         clearDatabaseTable(connection, table, table.getPrimaryValues(records));
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateMergeStatement(table))) {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateMergeStatement(connection, table))) {
             final int batchSize = 1000;
             int count = 0;
             int columnSize = table.getColumns().size();
@@ -127,8 +128,7 @@ public class Melon {
         if (isInitialized()) {
             return;
         }
-        createSchema(connection);
-        connection.setSchema(SqlHelper.sanitizeDbName(getSchema().getName()));
+        createAndSetSchema(connection);
         for (Table table : getSchema().getTables()) {
             createDatabaseSchemaTable(connection, table);
         }
@@ -139,13 +139,13 @@ public class Melon {
     }
 
     protected static void createDatabaseSchemaTable(Connection connection, Table table) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateTableStatement(table))) {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateTableStatement(connection, table))) {
             ps.execute();
         }
     }
 
     protected static void createDatabaseSchemaView(Connection connection, View view) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateViewStatement(view))) {
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateCreateViewStatement(connection, view))) {
             ps.execute();
         }
     }
@@ -167,8 +167,8 @@ public class Melon {
     }
 
     protected static void syncToStorage(Connection connection, Table table, Storage storage) throws SQLException, IOException {
-        List<List<String>> records = null;
-        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateSelectStatement(table))) {
+        List<List<String>> records;
+        try (PreparedStatement ps = connection.prepareStatement(SqlHelper.generateSelectStatement(connection, table))) {
             try (ResultSet rs = ps.executeQuery()) {
                 records = SqlHelper.fromResultSet(rs);
             }

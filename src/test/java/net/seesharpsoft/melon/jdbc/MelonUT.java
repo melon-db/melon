@@ -28,7 +28,7 @@ public class MelonUT extends TestFixture {
                 "/data/User.csv"
         };
     }
-    
+
     @Test
     public void should_create_correct_config_object_from_yaml_and_initialise_schema() throws SQLException {
         try (Connection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
@@ -43,8 +43,8 @@ public class MelonUT extends TestFixture {
     public void should_create_correct_config_object_from_yaml_and_have_data_loaded() throws SQLException {
         try (Connection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
             assertThat(connection, instanceOf(MelonConnection.class));
-            
-            ResultSet rs = connection.prepareStatement("SELECT * FROM User ORDER BY ID").executeQuery();
+
+            ResultSet rs = connection.prepareStatement("SELECT * FROM \"User\" ORDER BY \"id\"").executeQuery();
             rs.next();
             assertThat(rs.getString("firstName"), is("Fritz"));
             assertThat(rs.getString("lastname"), is("Fuchs"));
@@ -63,7 +63,7 @@ public class MelonUT extends TestFixture {
     @Test
     public void should_not_persist_changes_in_source_file_if_not_committed() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
-            connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
+            connection.prepareStatement("UPDATE \"User\" SET \"firstName\" = 'Tobi', \"lastName\" = 'Tester' WHERE \"id\" = 1").execute();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
             List<List<String>> records = storage.read();
@@ -76,7 +76,7 @@ public class MelonUT extends TestFixture {
     public void should_not_persist_changes_in_source_file_on_rollback() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
-            connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
+            connection.prepareStatement("UPDATE \"User\" SET \"firstName\" = 'Tobi', \"lastName\" = 'Tester' WHERE \"id\" = 1").execute();
             connection.rollback();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
@@ -91,7 +91,7 @@ public class MelonUT extends TestFixture {
     public void should_persist_changes_in_source_file_on_commit() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
-            connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
+            connection.prepareStatement("UPDATE \"User\" SET \"firstName\" = 'Tobi', \"lastName\" = 'Tester' WHERE \"id\" = 1").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
@@ -105,7 +105,7 @@ public class MelonUT extends TestFixture {
     public void should_not_persist_changes_in_source_if_accessMode_is_readOnly() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/SchemaAccessModeReadOnly.yaml")) {
 
-            connection.prepareStatement("UPDATE User SET firstname = 'Tobi', lastName = 'Tester' WHERE id = 1").execute();
+            connection.prepareStatement("UPDATE \"User\" SET \"firstName\" = 'Tobi', \"lastName\" = 'Tester' WHERE \"id\" = 1").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
@@ -119,7 +119,7 @@ public class MelonUT extends TestFixture {
     public void should_persist_new_rows_on_commit() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/UserOnlySchema.yaml")) {
 
-            connection.prepareStatement("INSERT INTO User (id, firstName, lastName) VALUES ('3', 'Tobi', 'Tester')").execute();
+            connection.prepareStatement("INSERT INTO \"User\" (\"id\", \"firstName\", \"lastName\") VALUES ('3', 'Tobi', 'Tester')").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("User").getStorage();
@@ -129,7 +129,7 @@ public class MelonUT extends TestFixture {
             assertThat(records.stream().filter(record -> record.get(0).equals("3")).findFirst().orElse(null), is(Arrays.asList("3", "Tobi", "Tester", null)));
         }
     }
-    
+
     @Ignore
     @Test
     public void should_create_correct_config_object_from_absolute_file_path() throws SQLException {

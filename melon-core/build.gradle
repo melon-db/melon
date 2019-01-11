@@ -9,6 +9,7 @@ configurations {
 dependencies {
     testFixtures sourceSets.test.output
     compile 'org.yaml:snakeyaml:1.23'
+    compile 'org.jooq:jooq:3.11.9'
     compile 'net.seesharpsoft.sharping:sharping-commons:0.15.0'
 }
 

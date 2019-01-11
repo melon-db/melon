@@ -26,7 +26,7 @@ public class MoviesComplexUT extends TestFixture {
     @Test
     public void should_insert_new_entry_in_empty_file() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
-            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER) VALUES ('Test')").execute();
+            connection.prepareStatement("INSERT INTO \"Movie_Full\" (\"Identifier\") VALUES ('Test')").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("Movie").getStorage();
@@ -39,7 +39,7 @@ public class MoviesComplexUT extends TestFixture {
     @Test
     public void should_insert_new_entry_in_empty_file_with_reference_value() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
-            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, COUNTRYCODE) VALUES ('Test', 'AD')").execute();
+            connection.prepareStatement("INSERT INTO \"Movie_Full\" (\"Identifier\", \"CountryCode\") VALUES ('Test', 'AD')").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();
@@ -55,7 +55,7 @@ public class MoviesComplexUT extends TestFixture {
     @Test
     public void should_insert_new_entry_in_empty_file_and_create_reference_value() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
-            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, NAME_EN) VALUES ('Test', 'Test English')").execute();
+            connection.prepareStatement("INSERT INTO \"Movie_Full\" (\"Identifier\", \"Name_en\") VALUES ('Test', 'Test English')").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();
@@ -75,10 +75,10 @@ public class MoviesComplexUT extends TestFixture {
     @Test
     public void should_update_new_entry_in_empty_file_and_create_reference_value() throws SQLException, IOException {
         try (MelonConnection connection = getConnection("/schemas/MoviesComplex.yaml")) {
-            connection.prepareStatement("INSERT INTO Movie_Full (IDENTIFIER, NAME_EN) VALUES ('Test', 'Test English')").execute();
+            connection.prepareStatement("INSERT INTO \"Movie_Full\" (\"Identifier\", \"Name_en\") VALUES ('Test', 'Test English')").execute();
             connection.commit();
 
-            connection.prepareStatement("UPDATE Movie_Full SET NAME_EN = 'Test English Updated', NAME_DE = 'Test German' WHERE IDENTIFIER = 'Test'").execute();
+            connection.prepareStatement("UPDATE \"Movie_Full\" SET \"Name_en\" = 'Test English Updated', \"Name_de\" = 'Test German' WHERE \"Identifier\" = 'Test'").execute();
             connection.commit();
 
             Storage storage = connection.melon.getSchema().getTable("Movie_Full").getStorage();

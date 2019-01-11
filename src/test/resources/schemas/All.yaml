@@ -41,16 +41,16 @@ tables:
 views:
   - name: UserWithAddresses
     query: >
-      SELECT u.*, a.id as AddressId, a.City, a.Country
-      FROM User u
-      LEFT OUTER JOIN Address a
-        ON a.userId = u.id
+      SELECT u.*, a."id" as "AddressId", a."city", a."country"
+      FROM "User" u
+      LEFT OUTER JOIN "Address" a
+        ON a."userId" = u."id"
   - name: TeamsAndUsers
     query: >
-      SELECT t.id, t.name, u.firstName, u.lastName
-      FROM Team t
-      LEFT OUTER JOIN TeamMembers tm
-        ON tm.teamId = t.id
-      LEFT OUTER JOIN User u
-        ON u.id = tm.userId
-      ORDER BY t.name
+      SELECT t."id", t."name", u."firstName", u."lastName"
+      FROM "Team" t
+      LEFT OUTER JOIN "TeamMembers" tm
+        ON tm."teamId" = t."id"
+      LEFT OUTER JOIN "User" u
+        ON u."id" = tm."userId"
+      ORDER BY t."name"

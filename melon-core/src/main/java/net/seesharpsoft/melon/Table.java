@@ -80,6 +80,10 @@ public interface Table extends PropertiesOwner, NamedEntity {
         return result;
     }
 
+    default List<Column> getReferenceColumns() {
+        return getReferenceColumns(null);
+    }
+
     default List<Column> getReferenceColumns(Table targetTable) {
         List<Column> referenceColumns = new ArrayList<>();
         for (Column column : getColumns()) {

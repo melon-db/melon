@@ -40,9 +40,9 @@ tables:
       - name: CountryCode
       - name: CountryName
         source: CountryCode.name
-      - name: Name_En
+      - name: Name_en
         source: Name@Movie_en
-      - name: Name_De
+      - name: Name_de
         source: Name@Movie_de
     storage:
       uri: melon:///Movie

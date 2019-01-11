@@ -19,7 +19,7 @@ public class MoviesUT extends TestFixture {
     @Test
     public void should_insert_new_entry_in_empty_file() throws SQLException {
         try (MelonConnection connection = getConnection("/schemas/Movies.yaml")) {
-            connection.prepareStatement("INSERT INTO Movie (NAME) VALUES ('Test')").execute();
+            connection.prepareStatement("INSERT INTO \"Movie\" (\"Name\") VALUES ('Test')").execute();
             connection.commit();
         }
     }

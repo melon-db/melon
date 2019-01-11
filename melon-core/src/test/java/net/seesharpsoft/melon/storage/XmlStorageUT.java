@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 public class XmlStorageUT extends TestFixture {
 
     public static void assertAddressData(Connection connection) throws SQLException {
-        try(ResultSet rs = connection.prepareStatement("SELECT * FROM Address ORDER BY ID").executeQuery()) {
+        try(ResultSet rs = connection.prepareStatement("SELECT * FROM \"Address\" ORDER BY \"id\"").executeQuery()) {
             rs.next();
             assertThat(rs.getString("id"), is("1"));
             assertThat(rs.getString("city"), is("Las Vegas"));
@@ -127,7 +127,7 @@ public class XmlStorageUT extends TestFixture {
     @Test
     public void should_read_country_xml() throws SQLException {
         try (Connection connection = getConnection("/Country.yaml")) {
-            ResultSet resultSet = connection.prepareStatement("SELECT COUNT(*) FROM COUNTRY").executeQuery();
+            ResultSet resultSet = connection.prepareStatement("SELECT COUNT(*) FROM \"Country\"").executeQuery();
 
             assertThat(resultSet.next(), is(true));
             assertThat(resultSet.getInt(1), is(250));
@@ -137,7 +137,7 @@ public class XmlStorageUT extends TestFixture {
     @Test
     public void should_insert_into_country_xml() throws SQLException, IOException {
         try (Connection connection = getConnection("/Country.yaml")) {
-            int updatedRows = connection.prepareStatement("INSERT INTO COUNTRY (NAME, CCA2) VALUES ('SUMMERWORLD', 'SW')").executeUpdate();
+            int updatedRows = connection.prepareStatement("INSERT INTO \"Country\" (\"name\", \"cca2\") VALUES ('SUMMERWORLD', 'SW')").executeUpdate();
             assertThat(updatedRows, is(1));
 
             connection.commit();
