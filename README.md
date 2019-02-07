@@ -15,6 +15,11 @@ Project Melon creates a database abstraction for arbitrary structured files to e
 
 ## State
 
+### v0.10.0
+
+- use JOOQ as SQL abstraction layer
+- storage parameter 'storage-adapter' to manually enforce certain storage adapter class
+
 ### v0.9.0
 
 - MelonStorage: enables editing data across several files within one table
