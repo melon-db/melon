@@ -26,7 +26,7 @@ allprojects {
     }
 
     group 'net.seesharpsoft.melon'
-    version = '0.10.0'
+    version = '0.11.0'
 
     repositories {
         mavenLocal()
@@ -72,6 +72,7 @@ dependencies {
     compile project(':melon-core')
     compile project(':melon-csv')
     compile project(':melon-html')
+    compile project(':melon-xls')
 }
 
 // coveralls does not support multi-module, therefore merging reports

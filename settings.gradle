@@ -13,3 +13,5 @@ include 'melon-core'
 include 'melon-html'
 include 'melon-csv'
 include 'melon-db'
+include 'melon-xls'
+

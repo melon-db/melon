@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    testCompile project(path: ':melon-core', configuration: 'testFixtures')
+    compile 'org.apache.poi:poi-ooxml:4.1.0'
+    compile project(':melon-core')
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

@@ -1,0 +1,12 @@
+name: dummy
+tables:
+  - name: Text
+    columns:
+      - name: index
+        primary: true
+      - name: Title
+      - name: Text
+    storage:
+      uri: data/SimpleFile.xlsx
+      properties:
+        xls-sheet-name: My Sheet

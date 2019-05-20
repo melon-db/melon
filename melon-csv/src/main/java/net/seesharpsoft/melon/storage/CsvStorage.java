@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class CsvStorage extends FileStorageBase {
 
-    public static final String HAS_HEADER = "csv-header";
+    public static final String PROPERTY_HAS_HEADER = "csv-header";
     public static final boolean DEFAULT_HAS_HEADER = true;
 
     public static final String PROPERTY_TRIM_VALUES = "csv-trim";
@@ -29,7 +29,7 @@ public class CsvStorage extends FileStorageBase {
     }
 
     protected boolean hasHeader() {
-        return properties.getOrDefault(HAS_HEADER, DEFAULT_HAS_HEADER);
+        return properties.getOrDefault(PROPERTY_HAS_HEADER, DEFAULT_HAS_HEADER);
     }
 
     protected boolean trimValues() {
