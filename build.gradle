@@ -7,7 +7,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        classpath 'io.freefair.gradle:lombok-plugin:4.0.1'
+//        classpath 'io.freefair.gradle:lombok-plugin:4.0.1'
+        classpath 'io.franzbecker:gradle-lombok:3.1.0'
     }
     ext {
         lombokVersion = '1.18.4'
@@ -22,7 +23,8 @@ allprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'jacoco'
-    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'io.franzbecker.gradle-lombok'
+//    apply plugin: 'io.freefair.lombok'
 
     jacoco {
         toolVersion = '0.8.2'
