@@ -7,11 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-//        classpath 'io.freefair.gradle:lombok-plugin:4.0.1'
         classpath 'io.franzbecker:gradle-lombok:3.1.0'
-    }
-    ext {
-        lombokVersion = '1.18.4'
     }
 }
 
@@ -24,7 +20,6 @@ allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'jacoco'
     apply plugin: 'io.franzbecker.gradle-lombok'
-//    apply plugin: 'io.freefair.lombok'
 
     jacoco {
         toolVersion = '0.8.2'
@@ -35,7 +30,7 @@ allprojects {
     }
 
     group 'net.seesharpsoft.melon'
-    version = '0.12.0'
+    version = '0.13.0'
 
     repositories {
         mavenLocal()
@@ -45,9 +40,6 @@ allprojects {
     sourceCompatibility = 1.8
 
     dependencies {
-        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-        testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-
         testCompile group: 'junit', name: 'junit', version: '4.12'
         testCompile 'com.h2database:h2:1.4.197'
     }
