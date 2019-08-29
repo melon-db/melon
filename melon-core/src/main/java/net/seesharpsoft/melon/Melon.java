@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.seesharpsoft.commons.collection.Properties;
 import net.seesharpsoft.melon.sql.SqlHelper;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -42,9 +40,12 @@ public class Melon {
     }
 
     protected boolean tableExists(Connection connection, Table table) {
-        try (DSLContext context = DSL.using(connection)) {
-            return !context.meta().getTables(table.getName()).isEmpty();
+        try (ResultSet tables = connection.getMetaData().getTables(null, getSchema().getName(), table.getName(), null)) {
+            return tables.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     protected void clearDatabaseTable(Connection connection, Table table, List<String> primaryValuesToKeep) throws SQLException {
